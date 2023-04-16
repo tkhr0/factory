@@ -1,3 +1,5 @@
+#![feature(get_many_mut)]
+
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
@@ -14,7 +16,6 @@ use piston::window::WindowSettings;
 
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
-    rotation: f64,  // Rotation for the square.
     field: Field,
 }
 
@@ -23,8 +24,7 @@ type Size = [f64; 2];
 
 impl App {
     fn initialize(&mut self) {
-        self.field.add_machine(Machine::new("A", [50.0, 50.0]));
-        self.field.add_machine(Machine::new("B", [150.0, 150.0]));
+        self.field.initialize();
     }
 
     fn render(&mut self, args: &RenderArgs) {
@@ -37,9 +37,8 @@ impl App {
         });
     }
 
-    fn update(&mut self, args: &UpdateArgs) {
-        // Rotate 2 radians per second.
-        self.rotation += 2.0 * args.dt;
+    fn update(&mut self, _args: &UpdateArgs) {
+        self.field.update();
     }
 
     pub fn button(&mut self, args: &ButtonArgs) {
@@ -47,6 +46,7 @@ impl App {
     }
 }
 
+#[derive(Debug)]
 pub struct Field {
     size: Size,
     machines: Vec<Machine>,
@@ -60,6 +60,11 @@ impl Field {
         }
     }
 
+    pub fn initialize(&mut self) {
+        self.add_machine(Machine::new("A", [50.0, 50.0]));
+        self.add_machine(Machine::new("B", [150.0, 150.0]));
+    }
+
     pub fn size(&self) -> Size {
         self.size
     }
@@ -71,8 +76,20 @@ impl Field {
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
         for machine in self.machines.iter() {
             machine.render(gl, context);
-            println!("{:?}", machine);
         }
+    }
+
+    pub fn update(&mut self) {
+        for i in 0..self.machines.len() {
+            if i == 0 {
+                continue;
+            }
+
+            if let Ok([prev, current]) = self.machines.get_many_mut([i - 1, i]) {
+                current.pull_resource(prev);
+            }
+        }
+        println!("{:?}", self.machines);
     }
 
     pub fn click(&mut self, args: &ButtonArgs) {
@@ -101,7 +118,7 @@ impl Machine {
         }
     }
 
-    pub fn name(&self) -> &'static str {
+    pub fn name(&self) -> &str {
         self.name
     }
 
@@ -206,6 +223,12 @@ impl Machine {
             gl,
         );
     }
+
+    pub fn pull_resource(&mut self, prev_machine: &mut Machine) {
+        if !prev_machine.container.is_empty() {
+            self.container.push(prev_machine.container.pop().unwrap());
+        }
+    }
 }
 
 fn main() {
@@ -222,7 +245,6 @@ fn main() {
     // Create a new game and run it.
     let mut app = App {
         gl: GlGraphics::new(opengl),
-        rotation: 0.0,
         field: Field::new(),
     };
 
