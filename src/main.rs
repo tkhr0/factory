@@ -8,7 +8,7 @@ use graphics::*;
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{
-    ButtonArgs, ButtonEvent, ButtonState, MouseCursorEvent, RenderArgs, RenderEvent, UpdateArgs,
+    ButtonArgs, ButtonEvent, ButtonState, RenderArgs, RenderEvent, UpdateArgs,
     UpdateEvent,
 };
 use piston::window::WindowSettings;
@@ -16,7 +16,6 @@ use piston::window::WindowSettings;
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
     rotation: f64,  // Rotation for the square.
-    rectangles: Vec<graphics::types::Rectangle>,
     machines: Vec<Machine>,
 }
 
@@ -33,6 +32,7 @@ impl App {
 
             for machine in self.machines.iter() {
                 machine.render(gl, &c);
+                println!("{:?}", machine);
             }
         });
     }
@@ -42,10 +42,9 @@ impl App {
         self.rotation += 2.0 * args.dt;
     }
 
-    pub fn button(&mut self, button_args: &ButtonArgs, mouse_args: &Point) {
+    pub fn button(&mut self, button_args: &ButtonArgs) {
         if button_args.state == ButtonState::Press {
-            self.rectangles
-                .push(rectangle::square(mouse_args[0], mouse_args[1], 50.0));
+            self.machines[0].load();
         }
     }
 
@@ -54,13 +53,31 @@ impl App {
     }
 }
 
+#[derive(Debug)]
+pub struct Recource {}
+
+#[derive(Debug)]
 pub struct Machine {
+    name: &'static str,
     position: Point,
+    container: Vec<Recource>,
 }
 
 impl Machine {
-    pub fn new(position: Point) -> Machine {
-        Machine { position }
+    pub fn new(name: &'static str, position: Point) -> Machine {
+        Machine {
+            name,
+            position,
+            container: Vec::new(),
+        }
+    }
+
+    pub fn name(&self) -> &'static str {
+        self.name
+    }
+
+    pub fn load(&mut self) {
+        self.container.push(Recource {});
     }
 
     pub fn position(&self) -> Point {
@@ -177,27 +194,26 @@ fn main() {
     let mut app = App {
         gl: GlGraphics::new(opengl),
         rotation: 0.0,
-        rectangles: Vec::new(),
         machines: Vec::new(),
     };
 
-    app.add_machine(Machine::new([50.0, 50.0]));
-    app.add_machine(Machine::new([150.0, 150.0]));
+    app.add_machine(Machine::new("A", [50.0, 50.0]));
+    app.add_machine(Machine::new("B", [150.0, 150.0]));
 
-    let mut mouse_pos = [0.0, 0.0];
+    // let mut mouse_pos = [0.0, 0.0];
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.render_args() {
             app.render(&args);
         }
 
-        if let Some(mouse_args) = e.mouse_cursor_args() {
-            mouse_pos = mouse_args;
-        }
+        // if let Some(mouse_args) = e.mouse_cursor_args() {
+        //     mouse_pos = mouse_args;
+        // }
 
         if let Some(args) = e.button_args() {
             println!("Button: {:?}", args);
-            app.button(&args, &mouse_pos);
+            app.button(&args);
         }
 
         if let Some(args) = e.update_args() {
