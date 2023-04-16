@@ -37,8 +37,8 @@ impl App {
         });
     }
 
-    fn update(&mut self, _args: &UpdateArgs) {
-        self.field.update();
+    fn update(&mut self, args: &UpdateArgs) {
+        self.field.update(args.dt);
     }
 
     pub fn button(&mut self, args: &ButtonArgs) {
@@ -79,14 +79,22 @@ impl Field {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, dt: f64) {
         for i in 0..self.machines.len() {
-            if i == 0 {
-                continue;
+            {
+                let current_machine = &mut self.machines[i];
+                current_machine.before_update(dt);
             }
-
-            if let Ok([prev, current]) = self.machines.get_many_mut([i - 1, i]) {
-                current.pull_resource(prev);
+            if i > 0 {
+                if let Ok([prev, current]) = self.machines.get_many_mut([i - 1, i]) {
+                    if current.operatable() {
+                        current.pull_resource(prev);
+                    }
+                }
+            }
+            {
+                let current_machine = &mut self.machines[i];
+                current_machine.after_update();
             }
         }
         println!("{:?}", self.machines);
@@ -107,6 +115,7 @@ pub struct Machine {
     name: &'static str,
     position: Point,
     container: Vec<Recource>,
+    cooling_time: f64,
 }
 
 impl Machine {
@@ -115,7 +124,22 @@ impl Machine {
             name,
             position,
             container: Vec::new(),
+            cooling_time: 0.0,
         }
+    }
+
+    pub fn before_update(&mut self, dt: f64) {
+        self.cooling_time += dt;
+    }
+
+    pub fn after_update(&mut self) {
+        if self.operatable() {
+            self.cooling_time = 0.0;
+        }
+    }
+
+    pub fn operatable(&self) -> bool {
+        self.cooling_time > 1.0
     }
 
     pub fn name(&self) -> &str {
