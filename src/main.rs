@@ -8,32 +8,32 @@ use graphics::*;
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{
-    ButtonArgs, ButtonEvent, ButtonState, RenderArgs, RenderEvent, UpdateArgs,
-    UpdateEvent,
+    ButtonArgs, ButtonEvent, ButtonState, RenderArgs, RenderEvent, UpdateArgs, UpdateEvent,
 };
 use piston::window::WindowSettings;
 
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
     rotation: f64,  // Rotation for the square.
-    machines: Vec<Machine>,
+    field: Field,
 }
 
 type Point = [f64; 2];
 type Size = [f64; 2];
 
 impl App {
+    fn initialize(&mut self) {
+        self.field.add_machine(Machine::new("A", [50.0, 50.0]));
+        self.field.add_machine(Machine::new("B", [150.0, 150.0]));
+    }
+
     fn render(&mut self, args: &RenderArgs) {
         const BACKGROUND: [f32; 4] = [252.0, 249.0, 230.0, 1.0];
 
         self.gl.draw(args.viewport(), |c, gl| {
             // Clear the screen.
             clear(BACKGROUND, gl);
-
-            for machine in self.machines.iter() {
-                machine.render(gl, &c);
-                println!("{:?}", machine);
-            }
+            self.field.render(gl, &c);
         });
     }
 
@@ -42,14 +42,43 @@ impl App {
         self.rotation += 2.0 * args.dt;
     }
 
-    pub fn button(&mut self, button_args: &ButtonArgs) {
-        if button_args.state == ButtonState::Press {
-            self.machines[0].load();
+    pub fn button(&mut self, args: &ButtonArgs) {
+        self.field.click(args);
+    }
+}
+
+pub struct Field {
+    size: Size,
+    machines: Vec<Machine>,
+}
+
+impl Field {
+    pub fn new() -> Field {
+        Field {
+            size: [500.0, 500.0],
+            machines: Vec::new(),
         }
+    }
+
+    pub fn size(&self) -> Size {
+        self.size
     }
 
     pub fn add_machine(&mut self, machine: Machine) {
         self.machines.push(machine);
+    }
+
+    pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
+        for machine in self.machines.iter() {
+            machine.render(gl, context);
+            println!("{:?}", machine);
+        }
+    }
+
+    pub fn click(&mut self, args: &ButtonArgs) {
+        if args.state == ButtonState::Press {
+            self.machines[0].load();
+        }
     }
 }
 
@@ -194,11 +223,10 @@ fn main() {
     let mut app = App {
         gl: GlGraphics::new(opengl),
         rotation: 0.0,
-        machines: Vec::new(),
+        field: Field::new(),
     };
 
-    app.add_machine(Machine::new("A", [50.0, 50.0]));
-    app.add_machine(Machine::new("B", [150.0, 150.0]));
+    app.initialize();
 
     // let mut mouse_pos = [0.0, 0.0];
     let mut events = Events::new(EventSettings::new());
