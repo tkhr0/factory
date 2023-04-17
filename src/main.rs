@@ -116,7 +116,7 @@ impl Field {
 }
 
 #[derive(Debug)]
-pub struct Recource {}
+pub struct Resource {}
 
 trait Clickable {
     fn on_click(&mut self);
@@ -126,7 +126,7 @@ trait Clickable {
 pub struct Machine {
     name: &'static str,
     position: Point,
-    container: Vec<Recource>,
+    container: Resource,
     cooling_time: f64,
 }
 
@@ -135,7 +135,7 @@ impl Machine {
         Machine {
             name,
             position,
-            container: Vec::new(),
+            container: [None, None, None, None],
             cooling_time,
         }
     }
@@ -159,7 +159,7 @@ impl Machine {
     }
 
     pub fn load(&mut self) {
-        self.container.push(Recource {});
+        self.container.push(Resource {});
     }
 
     pub fn position(&self) -> Point {
