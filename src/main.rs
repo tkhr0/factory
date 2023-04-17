@@ -10,7 +10,8 @@ use graphics::*;
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{
-    ButtonArgs, ButtonEvent, ButtonState, RenderArgs, RenderEvent, UpdateArgs, UpdateEvent,
+    ButtonArgs, ButtonEvent, ButtonState, MouseCursorEvent, RenderArgs, RenderEvent, UpdateArgs,
+    UpdateEvent,
 };
 use piston::window::WindowSettings;
 
@@ -41,8 +42,8 @@ impl App {
         self.field.update(args.dt);
     }
 
-    pub fn button(&mut self, args: &ButtonArgs) {
-        self.field.click(args);
+    pub fn button(&mut self, args: &ButtonArgs, mouse_pos: &Point) {
+        self.field.on_click(args, mouse_pos);
     }
 }
 
@@ -101,15 +102,25 @@ impl Field {
         println!("{:?}", self.machines);
     }
 
-    pub fn click(&mut self, args: &ButtonArgs) {
-        if args.state == ButtonState::Press {
-            self.machines[0].load();
+    pub fn on_click(&mut self, args: &ButtonArgs, mouse_pos: &Point) {
+        if args.state == ButtonState::Press
+            && args.button == piston::Button::Mouse(piston::MouseButton::Left)
+        {
+            for machine in self.machines.iter_mut() {
+                if machine.collided(mouse_pos) {
+                    machine.on_click();
+                }
+            }
         }
     }
 }
 
 #[derive(Debug)]
 pub struct Recource {}
+
+trait Clickable {
+    fn on_click(&mut self);
+}
 
 #[derive(Debug)]
 pub struct Machine {
@@ -184,6 +195,18 @@ impl Machine {
             self.position[0] + self.width(),
             self.position[1] + self.height(),
         ]
+    }
+
+    pub fn collided(&self, point: &Point) -> bool {
+        let x = point[0];
+        let y = point[1];
+        let top_left = self.top_left();
+        let top = top_left[1];
+        let left = top_left[0];
+        let bottom_right = self.bottom_right();
+        let right = bottom_right[0];
+        let bottom = bottom_right[1];
+        left <= x && x <= right && top <= y && y <= bottom
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
@@ -265,6 +288,12 @@ impl Machine {
     }
 }
 
+impl Clickable for Machine {
+    fn on_click(&mut self) {
+        self.load();
+    }
+}
+
 fn main() {
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
@@ -284,20 +313,20 @@ fn main() {
 
     app.initialize();
 
-    // let mut mouse_pos = [0.0, 0.0];
+    let mut mouse_pos = [0.0, 0.0];
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.render_args() {
             app.render(&args);
         }
 
-        // if let Some(mouse_args) = e.mouse_cursor_args() {
-        //     mouse_pos = mouse_args;
-        // }
+        if let Some(mouse_args) = e.mouse_cursor_args() {
+            mouse_pos = mouse_args;
+        }
 
         if let Some(args) = e.button_args() {
             println!("Button: {:?}", args);
-            app.button(&args);
+            app.button(&args, &mouse_pos);
         }
 
         if let Some(args) = e.update_args() {
