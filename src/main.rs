@@ -61,8 +61,9 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.add_machine(Machine::new("A", [50.0, 50.0]));
-        self.add_machine(Machine::new("B", [150.0, 150.0]));
+        self.add_machine(Machine::new("A", [50.0, 50.0], 0.0));
+        self.add_machine(Machine::new("B", [150.0, 150.0], 0.3));
+        self.add_machine(Machine::new("C", [220.0, 150.0], 0.8));
     }
 
     pub fn size(&self) -> Size {
@@ -119,12 +120,12 @@ pub struct Machine {
 }
 
 impl Machine {
-    pub fn new(name: &'static str, position: Point) -> Machine {
+    pub fn new(name: &'static str, position: Point, cooling_time: f64) -> Machine {
         Machine {
             name,
             position,
             container: Vec::new(),
-            cooling_time: 0.0,
+            cooling_time,
         }
     }
 
@@ -246,6 +247,15 @@ impl Machine {
             context.transform,
             gl,
         );
+
+        for i in 0..self.container.len() {
+            ellipse(
+                OUTLINE,
+                [position[0] + (i as f64) * 10.0, position[1], 10.0, 10.0],
+                context.transform,
+                gl,
+            );
+        }
     }
 
     pub fn pull_resource(&mut self, prev_machine: &mut Machine) {
