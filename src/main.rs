@@ -48,18 +48,25 @@ impl App {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
+struct Tile {
+    x: usize,
+    y: usize,
+}
+
+type GridRow = [Tile; 16];
+type GridField = [GridRow; 16];
+
 #[derive(Debug)]
 pub struct Field {
     size: Size,
+    grid: GridField,
     machines: Vec<Machine>,
 }
 
 impl Field {
     pub fn new() -> Field {
-        Field {
-            size: [500.0, 500.0],
-            machines: Vec::new(),
-        }
+        Self::default()
     }
 
     pub fn initialize(&mut self) {
@@ -104,6 +111,24 @@ impl Field {
                     machine.on_click();
                 }
             }
+        }
+    }
+}
+
+impl Default for Field {
+    fn default() -> Self {
+        let mut grid: GridField = [[Tile { x: 0, y: 0 }; 16]; 16];
+
+        for x in 0..16 {
+            for y in 0..16 {
+                grid[y][x] = Tile { x, y };
+            }
+        }
+
+        Self {
+            size: [500.0, 500.0],
+            grid,
+            machines: Vec::new(),
         }
     }
 }
