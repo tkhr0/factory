@@ -1,4 +1,5 @@
 #![feature(get_many_mut)]
+#![feature(associated_type_defaults)]
 
 extern crate glutin_window;
 extern crate graphics;
@@ -83,20 +84,10 @@ impl Field {
 
     pub fn update(&mut self, dt: f64) {
         for i in 0..self.machines.len() {
-            {
-                let current_machine = &mut self.machines[i];
-                current_machine.before_update(dt);
-            }
             if i > 0 {
                 if let Ok([prev, current]) = self.machines.get_many_mut([i - 1, i]) {
-                    if current.operatable() {
-                        current.pull_resource(prev);
-                    }
+                    current.update(dt, prev);
                 }
-            }
-            {
-                let current_machine = &mut self.machines[i];
-                current_machine.after_update();
             }
         }
         println!("{:?}", self.machines);
@@ -122,11 +113,42 @@ trait Clickable {
     fn on_click(&mut self);
 }
 
+trait Conveyor<S> {
+    type Container = Vec<Option<S>>;
+
+    fn update(&mut self, dt: f64, prev: &mut Self) {
+        self.before_update(dt);
+        if self.operatable() {
+            self.main(prev);
+        }
+        self.after_update();
+    }
+
+    fn main(&mut self, prev: &mut Self);
+
+    fn before_update(&mut self, dt: f64) {
+        self.set_cooling_time(self.cooling_time() + dt);
+    }
+
+    fn after_update(&mut self) {
+        if self.operatable() {
+            self.set_cooling_time(0.0);
+        }
+    }
+
+    fn set_cooling_time(&mut self, dt: f64);
+    fn cooling_time(&self) -> f64;
+
+    fn operatable(&self) -> bool {
+        self.cooling_time() > 1.0
+    }
+}
+
 #[derive(Debug)]
 pub struct Machine {
     name: &'static str,
     position: Point,
-    container: Resource,
+    container: Vec<Option<Resource>>,
     cooling_time: f64,
 }
 
@@ -135,23 +157,9 @@ impl Machine {
         Machine {
             name,
             position,
-            container: [None, None, None, None],
+            container: vec![None, None, None, None],
             cooling_time,
         }
-    }
-
-    pub fn before_update(&mut self, dt: f64) {
-        self.cooling_time += dt;
-    }
-
-    pub fn after_update(&mut self) {
-        if self.operatable() {
-            self.cooling_time = 0.0;
-        }
-    }
-
-    pub fn operatable(&self) -> bool {
-        self.cooling_time > 1.0
     }
 
     pub fn name(&self) -> &str {
@@ -159,7 +167,7 @@ impl Machine {
     }
 
     pub fn load(&mut self) {
-        self.container.push(Resource {});
+        self.container.push(Some(Resource {}));
     }
 
     pub fn position(&self) -> Point {
@@ -285,6 +293,20 @@ impl Machine {
         if !prev_machine.container.is_empty() {
             self.container.push(prev_machine.container.pop().unwrap());
         }
+    }
+}
+
+impl Conveyor<Resource> for Machine {
+    fn set_cooling_time(&mut self, dt: f64) {
+        self.cooling_time = dt;
+    }
+
+    fn cooling_time(&self) -> f64 {
+        self.cooling_time
+    }
+
+    fn main(&mut self, prev: &mut Self) {
+        self.pull_resource(prev);
     }
 }
 
