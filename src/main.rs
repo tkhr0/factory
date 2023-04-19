@@ -83,12 +83,14 @@ impl Field {
     }
 
     pub fn update(&mut self, dt: f64) {
-        for i in 0..self.machines.len() {
-            if i > 0 {
-                if let Ok([prev, current]) = self.machines.get_many_mut([i - 1, i]) {
-                    current.update(dt, prev);
-                }
-            }
+        let mut dummy = Machine {
+            name: "dummy",
+            position: [0.0, 0.0],
+            container: vec![],
+            cooling_time: 0.0,
+        };
+        for machine in self.machines.iter_mut() {
+            machine.update(dt, &mut dummy);
         }
         println!("{:?}", self.machines);
     }
@@ -113,9 +115,7 @@ trait Clickable {
     fn on_click(&mut self);
 }
 
-trait Conveyor<S> {
-    type Container = Vec<Option<S>>;
-
+trait MachineCore<S> {
     fn update(&mut self, dt: f64, prev: &mut Self) {
         self.before_update(dt);
         if self.operatable() {
@@ -144,11 +144,13 @@ trait Conveyor<S> {
     }
 }
 
+type Container = Vec<Option<Resource>>;
+
 #[derive(Debug)]
 pub struct Machine {
     name: &'static str,
     position: Point,
-    container: Vec<Option<Resource>>,
+    container: Container,
     cooling_time: f64,
 }
 
@@ -167,7 +169,11 @@ impl Machine {
     }
 
     pub fn load(&mut self) {
-        self.container.push(Some(Resource {}));
+        let length = self.container.len();
+        if self.container[length - 1].is_some() {
+            return;
+        }
+        self.container[length - 1] = Some(Resource {});
     }
 
     pub fn position(&self) -> Point {
@@ -279,13 +285,20 @@ impl Machine {
             gl,
         );
 
-        for i in 0..self.container.len() {
-            ellipse(
-                OUTLINE,
-                [position[0] + (i as f64) * 10.0, position[1], 10.0, 10.0],
-                context.transform,
-                gl,
-            );
+        for (i, resource) in self.container.iter().enumerate() {
+            if resource.is_some() {
+                ellipse(
+                    OUTLINE,
+                    [
+                        position[0] + (10.0 * 4.0 - (i as f64) * 10.0),
+                        position[1],
+                        10.0,
+                        10.0,
+                    ],
+                    context.transform,
+                    gl,
+                );
+            }
         }
     }
 
@@ -296,7 +309,7 @@ impl Machine {
     }
 }
 
-impl Conveyor<Resource> for Machine {
+impl MachineCore<Resource> for Machine {
     fn set_cooling_time(&mut self, dt: f64) {
         self.cooling_time = dt;
     }
@@ -305,8 +318,12 @@ impl Conveyor<Resource> for Machine {
         self.cooling_time
     }
 
-    fn main(&mut self, prev: &mut Self) {
-        self.pull_resource(prev);
+    fn main(&mut self, _prev: &mut Self) {
+        for i in 0..self.container.len() - 1 {
+            if self.container[i].is_none() {
+                self.container.swap(i, i + 1);
+            }
+        }
     }
 }
 
