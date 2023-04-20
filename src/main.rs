@@ -48,10 +48,38 @@ impl App {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+pub struct GridPoint {
+    pub x: usize,
+    pub y: usize,
+}
+
+impl GridPoint {
+    pub fn new(x: usize, y: usize) -> GridPoint {
+        GridPoint { x, y }
+    }
+}
+
+impl Default for GridPoint {
+    fn default() -> Self {
+        Self { x: 0, y: 0 }
+    }
+}
+
+#[derive(Debug)]
 struct Tile {
     x: usize,
     y: usize,
+    machine: Option<Machine>,
+}
+
+impl Default for Tile {
+    fn default() -> Self {
+        Self {
+            x: 0,
+            y: 0,
+            machine: None,
+        }
+    }
 }
 
 type GridRow = [Tile; 16];
@@ -61,55 +89,83 @@ type GridField = [GridRow; 16];
 pub struct Field {
     size: Size,
     grid: GridField,
-    machines: Vec<Machine>,
 }
 
 impl Field {
+    const TILE_SIZE: f64 = 50.0;
+
     pub fn new() -> Field {
         Self::default()
     }
 
     pub fn initialize(&mut self) {
-        self.add_machine(Machine::new("A", [50.0, 50.0], 0.0));
-        self.add_machine(Machine::new("B", [150.0, 150.0], 0.3));
-        self.add_machine(Machine::new("C", [220.0, 150.0], 0.8));
+        self.add_machine(Machine::new("A", 0.0), GridPoint::new(2, 3));
+        self.add_machine(Machine::new("B", 0.3), GridPoint::new(3, 3));
+        self.add_machine(Machine::new("C", 0.8), GridPoint::new(4, 3));
     }
 
     pub fn size(&self) -> Size {
         self.size
     }
 
-    pub fn add_machine(&mut self, machine: Machine) {
-        self.machines.push(machine);
+    pub fn add_machine(&mut self, machine: Machine, grid_point: GridPoint) {
+        self.grid[grid_point.y][grid_point.x].machine = Some(machine);
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        for machine in self.machines.iter() {
-            machine.render(gl, context);
+        for row in self.grid.iter() {
+            for tile in row.iter() {
+                Rectangle::new_border([0.0, 0.0, 0.0, 0.1], 1.0).draw(
+                    [
+                        Self::TILE_SIZE * tile.x as f64,
+                        Self::TILE_SIZE * tile.y as f64,
+                        Self::TILE_SIZE,
+                        Self::TILE_SIZE,
+                    ],
+                    &context.draw_state,
+                    context.transform,
+                    gl,
+                );
+                if let Some(machine) = &tile.machine {
+                    let mut context: Context = context.clone();
+                    context.transform = context.transform.trans(
+                        tile.x as f64 * Self::TILE_SIZE,
+                        tile.y as f64 * Self::TILE_SIZE,
+                    );
+                    machine.render(gl, &context);
+                }
+                context.reset();
+            }
         }
     }
 
     pub fn update(&mut self, dt: f64) {
         let mut dummy = Machine {
             name: "dummy",
-            position: [0.0, 0.0],
             container: vec![],
             cooling_time: 0.0,
         };
-        for machine in self.machines.iter_mut() {
-            machine.update(dt, &mut dummy);
+
+        for row in self.grid.iter_mut() {
+            for tile in row.iter_mut() {
+                if let Some(machine) = &mut tile.machine {
+                    machine.update(dt, &mut dummy);
+                }
+            }
         }
-        println!("{:?}", self.machines);
     }
 
     pub fn on_click(&mut self, args: &ButtonArgs, mouse_pos: &Point) {
         if args.state == ButtonState::Press
             && args.button == piston::Button::Mouse(piston::MouseButton::Left)
         {
-            for machine in self.machines.iter_mut() {
-                if machine.collided(mouse_pos) {
-                    machine.on_click();
-                }
+            let x = (mouse_pos[0] / Self::TILE_SIZE) as usize;
+            let y = (mouse_pos[1] / Self::TILE_SIZE) as usize;
+
+            println!("clicked: x: {}, y: {}", x, y);
+
+            if let Some(machine) = &mut self.grid[y][x].machine {
+                machine.on_click();
             }
         }
     }
@@ -117,18 +173,18 @@ impl Field {
 
 impl Default for Field {
     fn default() -> Self {
-        let mut grid: GridField = [[Tile { x: 0, y: 0 }; 16]; 16];
+        let mut grid: GridField = Default::default();
 
         for x in 0..16 {
             for y in 0..16 {
-                grid[y][x] = Tile { x, y };
+                grid[y][x].x = x;
+                grid[y][x].y = y;
             }
         }
 
         Self {
             size: [500.0, 500.0],
             grid,
-            machines: Vec::new(),
         }
     }
 }
@@ -174,16 +230,14 @@ type Container = Vec<Option<Resource>>;
 #[derive(Debug)]
 pub struct Machine {
     name: &'static str,
-    position: Point,
     container: Container,
     cooling_time: f64,
 }
 
 impl Machine {
-    pub fn new(name: &'static str, position: Point, cooling_time: f64) -> Machine {
+    pub fn new(name: &'static str, cooling_time: f64) -> Machine {
         Machine {
             name,
-            position,
             container: vec![None, None, None, None],
             cooling_time,
         }
@@ -201,10 +255,6 @@ impl Machine {
         self.container[length - 1] = Some(Resource {});
     }
 
-    pub fn position(&self) -> Point {
-        self.position
-    }
-
     fn width(&self) -> f64 {
         50.0
     }
@@ -218,22 +268,19 @@ impl Machine {
     }
 
     fn top_left(&self) -> Point {
-        [self.position[0], self.position[1]]
+        [0.0, 0.0]
     }
 
     fn top_right(&self) -> Point {
-        [self.position[0] + self.width(), self.position[1]]
+        [self.width(), 0.0]
     }
 
     fn bottom_left(&self) -> Point {
-        [self.position[0], self.position[1] + self.height()]
+        [0.0, self.height()]
     }
 
     fn bottom_right(&self) -> Point {
-        [
-            self.position[0] + self.width(),
-            self.position[1] + self.height(),
-        ]
+        [self.width(), self.height()]
     }
 
     pub fn collided(&self, point: &Point) -> bool {
@@ -252,15 +299,9 @@ impl Machine {
         const BODY: [f32; 4] = [255.0, 186.0, 3.0, 1.0];
         const OUTLINE: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
-        let position = self.position();
         let size = self.size();
 
-        rectangle(
-            BODY,
-            [position[0], position[1], size[0], size[1]],
-            context.transform,
-            gl,
-        );
+        rectangle(BODY, [0.0, 0.0, size[0], size[1]], context.transform, gl);
         line(
             OUTLINE,
             1.0,
@@ -314,12 +355,7 @@ impl Machine {
             if resource.is_some() {
                 ellipse(
                     OUTLINE,
-                    [
-                        position[0] + (10.0 * 4.0 - (i as f64) * 10.0),
-                        position[1],
-                        10.0,
-                        10.0,
-                    ],
+                    [(10.0 * 4.0 - (i as f64) * 10.0), 0.0, 10.0, 10.0],
                     context.transform,
                     gl,
                 );
