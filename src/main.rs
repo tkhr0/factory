@@ -22,6 +22,7 @@ mod tile;
 mod types;
 
 use app::App;
+use types::Point;
 
 fn main() {
     // Change this to OpenGL::V2_1 if not working.
@@ -39,7 +40,7 @@ fn main() {
 
     app.initialize();
 
-    let mut mouse_pos = [0.0, 0.0];
+    let mut mouse_pos = Point::new(0.0, 0.0);
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.render_args() {
@@ -47,7 +48,7 @@ fn main() {
         }
 
         if let Some(mouse_args) = e.mouse_cursor_args() {
-            mouse_pos = mouse_args;
+            mouse_pos = Point::new(mouse_args[0], mouse_args[1]);
         }
 
         if let Some(args) = e.button_args() {

@@ -20,5 +20,3 @@ impl Tile {
         self.machine.as_mut()
     }
 }
-
-

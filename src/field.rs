@@ -24,9 +24,9 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.add_machine(Machine::new("A", 0.0), GridPoint::new(2, 3));
-        self.add_machine(Machine::new("B", 0.3), GridPoint::new(3, 3));
-        self.add_machine(Machine::new("C", 0.8), GridPoint::new(4, 3));
+        self.add_machine(Machine::new("A"), GridPoint::new(2, 3));
+        self.add_machine(Machine::new("B"), GridPoint::new(3, 3));
+        self.add_machine(Machine::new("C"), GridPoint::new(4, 3));
     }
 
     pub fn add_machine(&mut self, machine: Machine, grid_point: GridPoint) {
@@ -48,7 +48,7 @@ impl Field {
                     gl,
                 );
                 if let Some(machine) = tile.machine() {
-                    let mut context: Context = context.clone();
+                    let mut context: Context = *context;
                     context.transform = context.transform.trans(
                         tile.x as f64 * Self::TILE_SIZE,
                         tile.y as f64 * Self::TILE_SIZE,
@@ -82,8 +82,8 @@ impl Field {
         if args.state == ButtonState::Press
             && args.button == piston::Button::Mouse(piston::MouseButton::Left)
         {
-            let x = (mouse_pos[0] / Self::TILE_SIZE) as usize;
-            let y = (mouse_pos[1] / Self::TILE_SIZE) as usize;
+            let x = (mouse_pos.x / Self::TILE_SIZE) as usize;
+            let y = (mouse_pos.y / Self::TILE_SIZE) as usize;
 
             println!("clicked: x: {}, y: {}", x, y);
 
@@ -102,6 +102,12 @@ impl Default for Field {
             for y in 0..16 {
                 grid[y][x].x = x;
                 grid[y][x].y = y;
+            }
+        }
+        for (y, row) in grid.iter_mut().enumerate() {
+            for (x, tile) in row.iter_mut().enumerate() {
+                tile.x = x;
+                tile.y = y;
             }
         }
 

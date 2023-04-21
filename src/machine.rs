@@ -14,11 +14,11 @@ pub struct Machine {
 }
 
 impl Machine {
-    pub fn new(name: &'static str, cooling_time: f64) -> Machine {
+    pub fn new(name: &'static str) -> Machine {
         Machine {
             name,
             container: Container::new(),
-            cooling_time,
+            cooling_time: 0.0,
         }
     }
 
@@ -43,23 +43,23 @@ impl Machine {
     }
 
     fn size(&self) -> types::Size {
-        [self.width(), self.height()]
+        types::Size::new(self.width(), self.height())
     }
 
     fn top_left(&self) -> types::Point {
-        [0.0, 0.0]
+        types::Point::new(0.0, 0.0)
     }
 
     fn top_right(&self) -> types::Point {
-        [self.width(), 0.0]
+        types::Point::new(self.width(), 0.0)
     }
 
     fn bottom_left(&self) -> types::Point {
-        [0.0, self.height()]
+        types::Point::new(0.0, self.height())
     }
 
     fn bottom_right(&self) -> types::Point {
-        [self.width(), self.height()]
+        types::Point::new(self.width(), self.height())
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
@@ -68,15 +68,20 @@ impl Machine {
 
         let size = self.size();
 
-        graphics::rectangle(BODY, [0.0, 0.0, size[0], size[1]], context.transform, gl);
+        graphics::rectangle(
+            BODY,
+            [0.0, 0.0, size.width, size.height],
+            context.transform,
+            gl,
+        );
         graphics::line(
             OUTLINE,
             1.0,
             [
-                self.top_left()[0],
-                self.top_left()[1],
-                self.top_right()[0],
-                self.top_right()[1],
+                self.top_left().x,
+                self.top_left().y,
+                self.top_right().x,
+                self.top_right().y,
             ],
             context.transform,
             gl,
@@ -85,10 +90,10 @@ impl Machine {
             OUTLINE,
             1.0,
             [
-                self.top_right()[0],
-                self.top_right()[1],
-                self.bottom_right()[0],
-                self.bottom_right()[1],
+                self.top_right().x,
+                self.top_right().y,
+                self.bottom_right().x,
+                self.bottom_right().y,
             ],
             context.transform,
             gl,
@@ -97,10 +102,10 @@ impl Machine {
             OUTLINE,
             1.0,
             [
-                self.bottom_right()[0],
-                self.bottom_right()[1],
-                self.bottom_left()[0],
-                self.bottom_left()[1],
+                self.bottom_right().x,
+                self.bottom_right().y,
+                self.bottom_left().x,
+                self.bottom_left().y,
             ],
             context.transform,
             gl,
@@ -109,10 +114,10 @@ impl Machine {
             OUTLINE,
             1.0,
             [
-                self.bottom_left()[0],
-                self.bottom_left()[1],
-                self.top_left()[0],
-                self.top_left()[1],
+                self.bottom_left().x,
+                self.bottom_left().y,
+                self.top_left().x,
+                self.top_left().y,
             ],
             context.transform,
             gl,
