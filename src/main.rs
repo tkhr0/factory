@@ -140,16 +140,18 @@ impl Field {
     }
 
     pub fn update(&mut self, dt: f64) {
-        let mut dummy = Machine {
-            name: "dummy",
-            container: vec![],
-            cooling_time: 0.0,
-        };
-
         for row in self.grid.iter_mut() {
-            for tile in row.iter_mut() {
-                if let Some(machine) = &mut tile.machine {
-                    machine.update(dt, &mut dummy);
+            for i in 0..row.len() {
+                if let Ok([current_tile, next_tile]) = row.get_many_mut([i, i + 1]) {
+                    if let Some(ref mut current_machine) = current_tile.machine {
+                        println!("current: {:?}", current_machine);
+                        println!("next   : {:?}", next_tile.machine);
+                        if let Some(ref mut next_machine) = next_tile.machine {
+                            current_machine.update(dt, Some(next_machine));
+                        } else {
+                            current_machine.update(dt, None);
+                        }
+                    }
                 }
             }
         }
@@ -197,15 +199,15 @@ trait Clickable {
 }
 
 trait MachineCore<S> {
-    fn update(&mut self, dt: f64, prev: &mut Self) {
+    fn update(&mut self, dt: f64, neighbor: Option<&mut Self>) {
         self.before_update(dt);
         if self.operatable() {
-            self.main(prev);
+            self.main(neighbor);
         }
         self.after_update();
     }
 
-    fn main(&mut self, prev: &mut Self);
+    fn main(&mut self, neighbor: Option<&mut Self>);
 
     fn before_update(&mut self, dt: f64) {
         self.set_cooling_time(self.cooling_time() + dt);
@@ -225,7 +227,65 @@ trait MachineCore<S> {
     }
 }
 
-type Container = Vec<Option<Resource>>;
+#[derive(Debug)]
+pub struct Container {
+    slot: Vec<Option<Resource>>,
+}
+
+impl Container {
+    fn new() -> Container {
+        Container {
+            slot: vec![None, None, None, None],
+        }
+    }
+
+    fn update(&mut self) {
+        for i in 0..(self.slot.len() - 1) {
+            if self.slot[i].is_none() {
+                self.slot.swap(i, i + 1);
+            }
+        }
+    }
+
+    fn pick(&mut self) -> Option<Resource> {
+        self.slot.push(None);
+        self.slot.swap_remove(0)
+    }
+
+    fn iter(&self) -> std::slice::Iter<'_, Option<Resource>> {
+        self.slot.iter()
+    }
+
+    fn len(&self) -> usize {
+        self.slot.len()
+    }
+
+    fn load(&mut self) {
+        let length = self.len();
+        if self.slot[length - 1].is_some() {
+            return;
+        }
+        self.slot[length - 1] = Some(Resource {});
+    }
+
+    fn acceptable(&self) -> bool {
+        self.slot[self.len() - 1].is_none()
+    }
+
+    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+        if resource.is_none() {
+            return Ok(());
+        }
+
+        let index = self.len() - 1;
+        if self.slot[index].is_some() {
+            return Err("Resource overflow from container");
+        }
+
+        self.slot[index] = resource;
+        Ok(())
+    }
+}
 
 #[derive(Debug)]
 pub struct Machine {
@@ -238,7 +298,7 @@ impl Machine {
     pub fn new(name: &'static str, cooling_time: f64) -> Machine {
         Machine {
             name,
-            container: vec![None, None, None, None],
+            container: Container::new(),
             cooling_time,
         }
     }
@@ -248,11 +308,15 @@ impl Machine {
     }
 
     pub fn load(&mut self) {
-        let length = self.container.len();
-        if self.container[length - 1].is_some() {
-            return;
-        }
-        self.container[length - 1] = Some(Resource {});
+        self.container.load();
+    }
+
+    fn pick(&mut self) -> Option<Resource> {
+        self.container.pick()
+    }
+
+    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+        self.container.push(resource)
     }
 
     fn width(&self) -> f64 {
@@ -355,17 +419,11 @@ impl Machine {
             if resource.is_some() {
                 ellipse(
                     OUTLINE,
-                    [(10.0 * 4.0 - (i as f64) * 10.0), 0.0, 10.0, 10.0],
+                    [((i as f64) * 10.0), 0.0, 10.0, 10.0],
                     context.transform,
                     gl,
                 );
             }
-        }
-    }
-
-    pub fn pull_resource(&mut self, prev_machine: &mut Machine) {
-        if !prev_machine.container.is_empty() {
-            self.container.push(prev_machine.container.pop().unwrap());
         }
     }
 }
@@ -379,10 +437,12 @@ impl MachineCore<Resource> for Machine {
         self.cooling_time
     }
 
-    fn main(&mut self, _prev: &mut Self) {
-        for i in 0..self.container.len() - 1 {
-            if self.container[i].is_none() {
-                self.container.swap(i, i + 1);
+    fn main(&mut self, neighbor: Option<&mut Self>) {
+        self.container.update();
+
+        if let Some(neighbor) = neighbor {
+            if self.container.acceptable() {
+                self.push(neighbor.pick()).unwrap();
             }
         }
     }
