@@ -46,79 +46,15 @@ impl Machine {
         types::Size::new(self.width(), self.height())
     }
 
-    fn top_left(&self) -> types::Point {
-        types::Point::new(0.0, 0.0)
-    }
-
-    fn top_right(&self) -> types::Point {
-        types::Point::new(self.width(), 0.0)
-    }
-
-    fn bottom_left(&self) -> types::Point {
-        types::Point::new(0.0, self.height())
-    }
-
-    fn bottom_right(&self) -> types::Point {
-        types::Point::new(self.width(), self.height())
-    }
-
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        const BODY: [f32; 4] = [255.0, 186.0, 3.0, 1.0];
-        const OUTLINE: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
+        const BODY: [f32; 4] = [0.749, 0.741, 0.329, 1.0];
+        const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
 
         let size = self.size();
 
-        graphics::rectangle(
-            BODY,
+        graphics::Rectangle::new(BODY).draw(
             [0.0, 0.0, size.width, size.height],
-            context.transform,
-            gl,
-        );
-        graphics::line(
-            OUTLINE,
-            1.0,
-            [
-                self.top_left().x,
-                self.top_left().y,
-                self.top_right().x,
-                self.top_right().y,
-            ],
-            context.transform,
-            gl,
-        );
-        graphics::line(
-            OUTLINE,
-            1.0,
-            [
-                self.top_right().x,
-                self.top_right().y,
-                self.bottom_right().x,
-                self.bottom_right().y,
-            ],
-            context.transform,
-            gl,
-        );
-        graphics::line(
-            OUTLINE,
-            1.0,
-            [
-                self.bottom_right().x,
-                self.bottom_right().y,
-                self.bottom_left().x,
-                self.bottom_left().y,
-            ],
-            context.transform,
-            gl,
-        );
-        graphics::line(
-            OUTLINE,
-            1.0,
-            [
-                self.bottom_left().x,
-                self.bottom_left().y,
-                self.top_left().x,
-                self.top_left().y,
-            ],
+            &context.draw_state,
             context.transform,
             gl,
         );
@@ -126,8 +62,8 @@ impl Machine {
         for (i, resource) in self.container.iter().enumerate() {
             if resource.is_some() {
                 graphics::ellipse(
-                    OUTLINE,
-                    [((i as f64) * 10.0), 0.0, 10.0, 10.0],
+                    RESOURCE,
+                    [20.0, ((i as f64) * 10.0) + 5.0, 10.0, 10.0],
                     context.transform,
                     gl,
                 );
@@ -191,6 +127,6 @@ pub trait MachineCore<S> {
     fn cooling_time(&self) -> f64;
 
     fn operatable(&self) -> bool {
-        self.cooling_time() > 1.0
+        self.cooling_time() > 0.5
     }
 }
