@@ -19,3 +19,25 @@ impl Size {
         Size { width, height }
     }
 }
+
+pub type Radian = f64;
+
+#[derive(Debug, Default)]
+#[rustfmt::skip]
+pub enum Direction {
+       #[default]
+       North,
+    West, East,
+       South,
+}
+
+impl Direction {
+    pub fn angle(&self) -> Radian {
+        match self {
+            Self::North => 0.0,
+            Self::West => std::f64::consts::FRAC_PI_2 * 3.0,
+            Self::East => std::f64::consts::FRAC_PI_2,
+            Self::South => std::f64::consts::PI,
+        }
+    }
+}

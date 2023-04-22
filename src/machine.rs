@@ -1,4 +1,5 @@
 use graphics::context::Context;
+use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use crate::container::Container;
@@ -11,6 +12,7 @@ pub struct Machine {
     name: &'static str,
     container: Container,
     cooling_time: f64,
+    direction: types::Direction,
 }
 
 impl Machine {
@@ -19,6 +21,7 @@ impl Machine {
             name,
             container: Container::new(),
             cooling_time: 0.0,
+            direction: Default::default(),
         }
     }
 
@@ -46,6 +49,10 @@ impl Machine {
         types::Size::new(self.width(), self.height())
     }
 
+    fn angle(&self) -> types::Radian {
+        self.direction.angle()
+    }
+
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
         const BODY: [f32; 4] = [0.749, 0.741, 0.329, 1.0];
         const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
@@ -59,12 +66,29 @@ impl Machine {
             gl,
         );
 
+        graphics::Polygon::new([0.3, 0.0, 0.0, 0.5]).draw(
+            &[
+                [0.0, 0.0 - self.height() / 2.0],
+                [10.0, 10.0 - self.height() / 2.0],
+                [-10.0, 10.0 - self.height() / 2.0],
+            ],
+            &context.draw_state,
+            context
+                .transform
+                .trans(self.width() / 2.0, self.height() / 2.0)
+                .rot_rad(self.angle()),
+            gl,
+        );
+
         for (i, resource) in self.container.iter().enumerate() {
             if resource.is_some() {
                 graphics::ellipse(
                     RESOURCE,
-                    [20.0, ((i as f64) * 10.0) + 5.0, 10.0, 10.0],
-                    context.transform,
+                    [-5.0, (-20.0 + (i as f64) * 10.0), 10.0, 10.0],
+                    context
+                        .transform
+                        .trans(self.width() / 2.0, self.height() / 2.0)
+                        .rot_rad(self.angle()),
                     gl,
                 );
             }
