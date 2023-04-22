@@ -8,12 +8,13 @@ use crate::machine::{Clickable, Machine, MachineCore};
 use crate::tile::Tile;
 use crate::types::Point;
 
-type GridRow = [Tile; 16];
-type GridField = [GridRow; 16];
+const WIDTH: usize = 16;
+const HEIGHT: usize = 16;
+const SIZE: usize = WIDTH * HEIGHT;
 
 #[derive(Debug)]
 pub struct Field {
-    grid: GridField,
+    tiles: Vec<Tile>, // FIXME: Use a array instead of a vector
 }
 
 impl Field {
@@ -30,48 +31,44 @@ impl Field {
     }
 
     pub fn add_machine(&mut self, machine: Machine, grid_point: GridPoint) {
-        self.grid[grid_point.y][grid_point.x].set_machine(machine);
+        self.tiles[grid_point.to_index(WIDTH)].set_machine(machine);
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        for row in self.grid.iter() {
-            for tile in row.iter() {
-                graphics::Rectangle::new_border([0.0, 0.0, 0.0, 0.1], 1.0).draw(
-                    [
-                        Self::TILE_SIZE * tile.x as f64,
-                        Self::TILE_SIZE * tile.y as f64,
-                        Self::TILE_SIZE,
-                        Self::TILE_SIZE,
-                    ],
-                    &context.draw_state,
-                    context.transform,
-                    gl,
+        for tile in self.tiles.iter() {
+            graphics::Rectangle::new_border([0.0, 0.0, 0.0, 0.1], 1.0).draw(
+                [
+                    Self::TILE_SIZE * tile.x as f64,
+                    Self::TILE_SIZE * tile.y as f64,
+                    Self::TILE_SIZE,
+                    Self::TILE_SIZE,
+                ],
+                &context.draw_state,
+                context.transform,
+                gl,
+            );
+            if let Some(machine) = tile.machine() {
+                let mut context: Context = *context;
+                context.transform = context.transform.trans(
+                    tile.x as f64 * Self::TILE_SIZE,
+                    tile.y as f64 * Self::TILE_SIZE,
                 );
-                if let Some(machine) = tile.machine() {
-                    let mut context: Context = *context;
-                    context.transform = context.transform.trans(
-                        tile.x as f64 * Self::TILE_SIZE,
-                        tile.y as f64 * Self::TILE_SIZE,
-                    );
-                    machine.render(gl, &context);
-                    context.reset();
-                }
+                machine.render(gl, &context);
+                context.reset();
             }
         }
     }
 
     pub fn update(&mut self, dt: f64) {
-        for row in self.grid.iter_mut() {
-            for i in 0..row.len() {
-                if let Ok([current_tile, next_tile]) = row.get_many_mut([i, i + 1]) {
-                    if let Some(ref mut current_machine) = current_tile.machine_mut() {
-                        println!("current: {:?}", current_machine);
-                        println!("next   : {:?}", next_tile.machine());
-                        if let Some(ref mut next_machine) = next_tile.machine_mut() {
-                            current_machine.update(dt, Some(next_machine));
-                        } else {
-                            current_machine.update(dt, None);
-                        }
+        for i in 0..self.tiles.len() - 1 {
+            if let Ok([current_tile, next_tile]) = self.tiles.get_many_mut([i, i + 1]) {
+                if let Some(ref mut current_machine) = current_tile.machine_mut() {
+                    println!("current: {:?}", current_machine);
+                    println!("next   : {:?}", next_tile.machine());
+                    if let Some(ref mut next_machine) = next_tile.machine_mut() {
+                        current_machine.update(dt, Some(next_machine));
+                    } else {
+                        current_machine.update(dt, None);
                     }
                 }
             }
@@ -84,10 +81,11 @@ impl Field {
         {
             let x = (mouse_pos.x / Self::TILE_SIZE) as usize;
             let y = (mouse_pos.y / Self::TILE_SIZE) as usize;
+            let point: GridPoint = GridPoint::new(x, y);
 
-            println!("clicked: x: {}, y: {}", x, y);
+            println!("clicked: x: {}, y: {}", point.x, point.y);
 
-            if let Some(machine) = &mut self.grid[y][x].machine_mut() {
+            if let Some(machine) = &mut self.tiles[point.to_index(WIDTH)].machine_mut() {
                 machine.on_click();
             } else {
                 self.add_machine(Machine::new("D"), GridPoint::new(x, y));
@@ -98,21 +96,15 @@ impl Field {
 
 impl Default for Field {
     fn default() -> Self {
-        let mut grid: GridField = Default::default();
+        let mut tiles = Vec::with_capacity(SIZE);
 
-        for x in 0..16 {
-            for y in 0..16 {
-                grid[y][x].x = x;
-                grid[y][x].y = y;
-            }
-        }
-        for (y, row) in grid.iter_mut().enumerate() {
-            for (x, tile) in row.iter_mut().enumerate() {
-                tile.x = x;
-                tile.y = y;
-            }
+        for i in 0..SIZE {
+            let mut tile: Tile = Default::default();
+            tile.x = i % WIDTH;
+            tile.y = i / WIDTH;
+            tiles.push(tile);
         }
 
-        Self { grid }
+        Self { tiles }
     }
 }
