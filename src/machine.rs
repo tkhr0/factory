@@ -37,6 +37,10 @@ impl Machine {
         self.container.push(resource)
     }
 
+    pub fn rotate(&mut self) {
+        self.set_direction(self.direction().next());
+    }
+
     fn width(&self) -> f64 {
         50.0
     }
@@ -51,6 +55,10 @@ impl Machine {
 
     pub fn direction(&self) -> &types::Direction {
         &self.direction
+    }
+
+    fn set_direction(&mut self, direction: types::Direction) {
+        self.direction = direction;
     }
 
     fn angle(&self) -> types::Radian {

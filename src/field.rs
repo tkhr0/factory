@@ -122,19 +122,27 @@ impl Field {
     }
 
     pub fn on_click(&mut self, args: &ButtonArgs, mouse_pos: &Point) {
-        if args.state == ButtonState::Press
-            && args.button == piston::Button::Mouse(piston::MouseButton::Left)
-        {
+        if args.state == ButtonState::Press {
             let x = (mouse_pos.x / Self::TILE_SIZE) as usize;
             let y = (mouse_pos.y / Self::TILE_SIZE) as usize;
             let point: GridPoint = GridPoint::new(x, y);
 
             println!("clicked: x: {}, y: {}", point.x, point.y);
 
-            if let Some(machine) = &mut self.tiles[point.to_index(WIDTH)].machine_mut() {
-                machine.on_click();
-            } else {
-                self.add_machine(Machine::new("D"), GridPoint::new(x, y));
+            match args.button {
+                piston::Button::Mouse(piston::MouseButton::Left) => {
+                    if let Some(machine) = &mut self.tiles[point.to_index(WIDTH)].machine_mut() {
+                        machine.on_click();
+                    } else {
+                        self.add_machine(Machine::new("D"), GridPoint::new(x, y));
+                    }
+                }
+                piston::Button::Keyboard(piston::Key::R) => {
+                    if let Some(machine) = &mut self.tiles[point.to_index(WIDTH)].machine_mut() {
+                        machine.rotate();
+                    }
+                }
+                _ => (),
             }
         }
     }
