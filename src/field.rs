@@ -89,6 +89,8 @@ impl Field {
 
             if let Some(machine) = &mut self.grid[y][x].machine_mut() {
                 machine.on_click();
+            } else {
+                self.add_machine(Machine::new("D"), GridPoint::new(x, y));
             }
         }
     }
