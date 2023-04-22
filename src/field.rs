@@ -6,7 +6,7 @@ use piston::input::{ButtonArgs, ButtonState};
 use crate::grid_point::GridPoint;
 use crate::machine::{Clickable, Machine, MachineCore};
 use crate::tile::Tile;
-use crate::types::Point;
+use crate::types::{Direction, Point};
 
 const WIDTH: usize = 16;
 const HEIGHT: usize = 16;
@@ -59,16 +59,62 @@ impl Field {
         }
     }
 
+    fn relative_index(&self, index: usize, direction: &Direction) -> Option<usize> {
+        let x = index % WIDTH;
+        let y = index / WIDTH;
+
+        match direction {
+            Direction::North => {
+                if y == 0 {
+                    None
+                } else {
+                    Some(index - WIDTH)
+                }
+            }
+            Direction::South => {
+                if y == HEIGHT - 1 {
+                    None
+                } else {
+                    Some(index + WIDTH)
+                }
+            }
+            Direction::West => {
+                if x == 0 {
+                    None
+                } else {
+                    Some(index - 1)
+                }
+            }
+            Direction::East => {
+                if x == WIDTH - 1 {
+                    None
+                } else {
+                    Some(index + 1)
+                }
+            }
+        }
+    }
+
     pub fn update(&mut self, dt: f64) {
         for i in 0..self.tiles.len() - 1 {
-            if let Ok([current_tile, next_tile]) = self.tiles.get_many_mut([i, i + 1]) {
-                if let Some(ref mut current_machine) = current_tile.machine_mut() {
-                    println!("current: {:?}", current_machine);
-                    println!("next   : {:?}", next_tile.machine());
-                    if let Some(ref mut next_machine) = next_tile.machine_mut() {
-                        current_machine.update(dt, Some(next_machine));
-                    } else {
-                        current_machine.update(dt, None);
+            let target_index = if let Some(machine) = self.tiles[i].machine() {
+                self.relative_index(i, machine.direction())
+            } else {
+                None
+            };
+
+            if self.tiles[i].machine().is_some() {
+                if let Some(target_index) = target_index {
+                    if let Ok([current_tile, target_tile]) =
+                        self.tiles.get_many_mut([i, target_index])
+                    {
+                        if let Some(ref mut current_machine) = current_tile.machine_mut() {
+                            if let Some(ref mut target_machine) = target_tile.machine_mut() {
+                                current_machine.update(dt, Some(target_machine));
+                            } else {
+                                current_machine.update(dt, None);
+                            }
+                        }
                     }
                 }
             }

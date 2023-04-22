@@ -49,8 +49,12 @@ impl Machine {
         types::Size::new(self.width(), self.height())
     }
 
+    pub fn direction(&self) -> &types::Direction {
+        &self.direction
+    }
+
     fn angle(&self) -> types::Radian {
-        self.direction.angle()
+        self.direction().angle()
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
@@ -105,14 +109,14 @@ impl MachineCore<Resource> for Machine {
         self.cooling_time
     }
 
-    fn main(&mut self, neighbor: Option<&mut Self>) {
-        self.container.update();
-
-        if let Some(neighbor) = neighbor {
-            if self.container.acceptable() {
-                self.push(neighbor.pick()).unwrap();
+    fn main(&mut self, target: Option<&mut Self>) {
+        if let Some(target) = target {
+            if target.container.acceptable() {
+                target.push(self.pick()).unwrap();
             }
         }
+
+        self.container.update();
     }
 }
 
