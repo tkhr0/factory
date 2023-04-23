@@ -4,7 +4,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::grid_point::GridPoint;
-use crate::machine::{Clickable, Machine, MachineBuilder, MachineCore};
+use crate::machine::{Clickable, Conveyer, ConveyerBuilder, MachineCore};
 use crate::tile::Tile;
 use crate::types::{Direction, Point};
 
@@ -25,58 +25,58 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.add_machine(
-            MachineBuilder::new("A")
+        self.add_conveyer(
+            ConveyerBuilder::new("A")
                 .set_direction(Direction::East)
                 .build(),
             GridPoint::new(2, 3),
         );
-        self.add_machine(
-            MachineBuilder::new("B")
+        self.add_conveyer(
+            ConveyerBuilder::new("B")
                 .set_direction(Direction::East)
                 .build(),
             GridPoint::new(3, 3),
         );
-        self.add_machine(
-            MachineBuilder::new("C")
+        self.add_conveyer(
+            ConveyerBuilder::new("C")
                 .set_direction(Direction::South)
                 .build(),
             GridPoint::new(4, 3),
         );
-        self.add_machine(
-            MachineBuilder::new("D")
+        self.add_conveyer(
+            ConveyerBuilder::new("D")
                 .set_direction(Direction::South)
                 .build(),
             GridPoint::new(4, 4),
         );
-        self.add_machine(
-            MachineBuilder::new("E")
+        self.add_conveyer(
+            ConveyerBuilder::new("E")
                 .set_direction(Direction::West)
                 .build(),
             GridPoint::new(4, 5),
         );
-        self.add_machine(
-            MachineBuilder::new("F")
+        self.add_conveyer(
+            ConveyerBuilder::new("F")
                 .set_direction(Direction::West)
                 .build(),
             GridPoint::new(3, 5),
         );
-        self.add_machine(
-            MachineBuilder::new("G")
+        self.add_conveyer(
+            ConveyerBuilder::new("G")
                 .set_direction(Direction::North)
                 .build(),
             GridPoint::new(2, 5),
         );
-        self.add_machine(
-            MachineBuilder::new("H")
+        self.add_conveyer(
+            ConveyerBuilder::new("H")
                 .set_direction(Direction::North)
                 .build(),
             GridPoint::new(2, 4),
         );
     }
 
-    pub fn add_machine(&mut self, machine: Machine, grid_point: GridPoint) {
-        self.tiles[grid_point.to_index(WIDTH)].set_machine(machine);
+    pub fn add_conveyer(&mut self, conveyer: Conveyer, grid_point: GridPoint) {
+        self.tiles[grid_point.to_index(WIDTH)].set_conveyer(conveyer);
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
@@ -92,13 +92,13 @@ impl Field {
                 context.transform,
                 gl,
             );
-            if let Some(machine) = tile.machine() {
+            if let Some(conveyer) = tile.conveyer() {
                 let mut context: Context = *context;
                 context.transform = context.transform.trans(
                     tile.x as f64 * Self::TILE_SIZE,
                     tile.y as f64 * Self::TILE_SIZE,
                 );
-                machine.render(gl, &context);
+                conveyer.render(gl, &context);
                 context.reset();
             }
         }
@@ -142,22 +142,22 @@ impl Field {
 
     pub fn update(&mut self, dt: f64) {
         for i in 0..self.tiles.len() - 1 {
-            let target_index = if let Some(machine) = self.tiles[i].machine() {
-                self.relative_index(i, machine.direction())
+            let target_index = if let Some(conveyer) = self.tiles[i].conveyer() {
+                self.relative_index(i, conveyer.direction())
             } else {
                 None
             };
 
-            if self.tiles[i].machine().is_some() {
+            if self.tiles[i].conveyer().is_some() {
                 if let Some(target_index) = target_index {
                     if let Ok([current_tile, target_tile]) =
                         self.tiles.get_many_mut([i, target_index])
                     {
-                        if let Some(ref mut current_machine) = current_tile.machine_mut() {
-                            if let Some(ref mut target_machine) = target_tile.machine_mut() {
-                                current_machine.update(dt, Some(target_machine));
+                        if let Some(ref mut current_conveyer) = current_tile.conveyer_mut() {
+                            if let Some(ref mut target_conveyer) = target_tile.conveyer_mut() {
+                                current_conveyer.update(dt, Some(target_conveyer));
                             } else {
-                                current_machine.update(dt, None);
+                                current_conveyer.update(dt, None);
                             }
                         }
                     }
@@ -176,15 +176,15 @@ impl Field {
 
             match args.button {
                 piston::Button::Mouse(piston::MouseButton::Left) => {
-                    if let Some(machine) = &mut self.tiles[point.to_index(WIDTH)].machine_mut() {
-                        machine.on_click();
+                    if let Some(conveyer) = &mut self.tiles[point.to_index(WIDTH)].conveyer_mut() {
+                        conveyer.on_click();
                     } else {
-                        self.add_machine(Machine::new("D"), GridPoint::new(x, y));
+                        self.add_conveyer(Conveyer::new("D"), GridPoint::new(x, y));
                     }
                 }
                 piston::Button::Keyboard(piston::Key::R) => {
-                    if let Some(machine) = &mut self.tiles[point.to_index(WIDTH)].machine_mut() {
-                        machine.rotate();
+                    if let Some(conveyer) = &mut self.tiles[point.to_index(WIDTH)].conveyer_mut() {
+                        conveyer.rotate();
                     }
                 }
                 _ => (),

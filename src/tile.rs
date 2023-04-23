@@ -1,22 +1,22 @@
-use crate::machine::Machine;
+use crate::machine::Conveyer;
 
 #[derive(Debug, Default)]
 pub struct Tile {
     pub x: usize,
     pub y: usize,
-    machine: Option<Machine>,
+    conveyer: Option<Conveyer>,
 }
 
 impl Tile {
-    pub fn set_machine(&mut self, machine: Machine) {
-        self.machine = Some(machine);
+    pub fn set_conveyer(&mut self, conveyer: Conveyer) {
+        self.conveyer = Some(conveyer);
     }
 
-    pub fn machine(&self) -> Option<&Machine> {
-        self.machine.as_ref()
+    pub fn conveyer(&self) -> Option<&Conveyer> {
+        self.conveyer.as_ref()
     }
 
-    pub fn machine_mut(&mut self) -> Option<&mut Machine> {
-        self.machine.as_mut()
+    pub fn conveyer_mut(&mut self) -> Option<&mut Conveyer> {
+        self.conveyer.as_mut()
     }
 }
