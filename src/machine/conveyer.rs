@@ -2,16 +2,16 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use crate::container::Container;
 use crate::machine::{Clickable, MachineCore};
 use crate::resource::Resource;
 use crate::types;
+use crate::Slot;
 
 #[derive(Debug)]
 pub struct Conveyer {
     #[allow(dead_code)]
     name: &'static str,
-    container: Container,
+    slots: Vec<Slot>,
     cooling_time: f64,
     direction: types::Direction,
 }
@@ -20,22 +20,40 @@ impl Conveyer {
     pub fn new(name: &'static str) -> Self {
         Self {
             name,
-            container: Container::new(),
+            slots: (0..4).map(|_| Slot::default()).collect(),
             cooling_time: 0.0,
             direction: Default::default(),
         }
     }
 
     pub fn load(&mut self) {
-        self.container.load();
+        if let Some(last_slot) = self.slots.last_mut() {
+            let _ = last_slot.push(Some(Resource::default()));
+        }
     }
 
     fn pick(&mut self) -> Option<Resource> {
-        self.container.pick()
+        if let Some(first_slot) = self.slots.first_mut() {
+            first_slot.pick()
+        } else {
+            None
+        }
     }
 
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
-        self.container.push(resource)
+        if let Some(last_slot) = self.slots.last_mut() {
+            last_slot.push(resource)
+        } else {
+            Err("No slot to push")
+        }
+    }
+
+    fn acceptable(&self) -> bool {
+        if let Some(last_slot) = self.slots.last() {
+            last_slot.is_empty()
+        } else {
+            false
+        }
     }
 
     pub fn rotate(&mut self) {
@@ -66,6 +84,15 @@ impl Conveyer {
         self.direction().angle()
     }
 
+    fn update(&mut self) {
+        println!("Conveyer update: {:?}", self);
+        for i in 0..(self.slots.len() - 1) {
+            if self.slots[i].is_empty() {
+                self.slots.swap(i, i + 1);
+            }
+        }
+    }
+
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
         const BODY: [f32; 4] = [0.749, 0.741, 0.329, 1.0];
         const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
@@ -93,8 +120,8 @@ impl Conveyer {
             gl,
         );
 
-        for (i, resource) in self.container.iter().enumerate() {
-            if resource.is_some() {
+        for (i, slot) in self.slots.iter().enumerate() {
+            if slot.is_some() {
                 graphics::ellipse(
                     RESOURCE,
                     [-5.0, (-20.0 + (i as f64) * 10.0), 10.0, 10.0],
@@ -120,12 +147,12 @@ impl MachineCore<Resource> for Conveyer {
 
     fn main(&mut self, target: Option<&mut Self>) {
         if let Some(target) = target {
-            if target.container.acceptable() {
+            if target.acceptable() {
                 target.push(self.pick()).unwrap();
             }
         }
 
-        self.container.update();
+        self.update();
     }
 }
 
@@ -157,7 +184,7 @@ impl ConveyerBuilder {
         let direction = self.direction.take().unwrap_or_default();
         Conveyer {
             name: self.name,
-            container: Container::new(),
+            slots: (0..4).map(|_| Slot::default()).collect(),
             cooling_time: 0.0,
             direction,
         }

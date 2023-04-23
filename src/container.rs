@@ -1,7 +1,7 @@
 use crate::resource::Resource;
 
 #[derive(Debug)]
-pub struct Container {
+struct Container {
     slot: Vec<Option<Resource>>,
 }
 
@@ -38,7 +38,7 @@ impl Container {
         if self.slot[length - 1].is_some() {
             return;
         }
-        self.slot[length - 1] = Some(Resource {});
+        self.slot[length - 1] = Some(Resource::default());
     }
 
     pub fn acceptable(&self) -> bool {

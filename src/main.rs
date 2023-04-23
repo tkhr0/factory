@@ -18,10 +18,12 @@ mod field;
 mod grid_point;
 mod machine;
 mod resource;
+mod slot;
 mod tile;
 mod types;
 
 use app::App;
+use slot::Slot;
 use types::Point;
 
 fn main() {
