@@ -14,6 +14,7 @@ use piston::window::WindowSettings;
 
 mod app;
 mod field;
+mod fixture;
 mod grid_point;
 mod machine;
 mod resource;
@@ -22,6 +23,7 @@ mod tile;
 mod types;
 
 use app::App;
+use fixture::{Fixture, Iterator};
 use slot::Slot;
 use types::Point;
 

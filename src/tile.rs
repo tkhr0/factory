@@ -1,22 +1,28 @@
-use crate::machine::Conveyer;
+use crate::Fixture;
 
 #[derive(Debug, Default)]
 pub struct Tile {
     pub x: usize,
     pub y: usize,
-    conveyer: Option<Conveyer>,
+    fixture: Option<Box<dyn Fixture>>,
 }
 
 impl Tile {
-    pub fn set_conveyer(&mut self, conveyer: Conveyer) {
-        self.conveyer = Some(conveyer);
+    pub fn set_fixture(&mut self, fixture: Box<dyn Fixture>) {
+        self.fixture = Some(fixture);
     }
 
-    pub fn conveyer(&self) -> Option<&Conveyer> {
-        self.conveyer.as_ref()
+    pub fn fixture(&self) -> Option<&Box<dyn Fixture>> {
+        self.fixture.as_ref()
     }
 
-    pub fn conveyer_mut(&mut self) -> Option<&mut Conveyer> {
-        self.conveyer.as_mut()
+    pub fn fixture_mut(&mut self) -> Option<&mut Box<dyn Fixture>> {
+        self.fixture.as_mut()
+    }
+
+    pub fn update(&mut self, dt: f64) {
+        if let Some(fixture) = self.fixture_mut() {
+            fixture.update(dt);
+        }
     }
 }

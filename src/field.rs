@@ -4,9 +4,10 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::grid_point::GridPoint;
-use crate::machine::{Clickable, Conveyer, ConveyerBuilder, MachineCore};
+use crate::machine::ConveyerBuilder;
 use crate::tile::Tile;
 use crate::types::{Direction, Point};
+use crate::Fixture;
 
 const WIDTH: usize = 16;
 const HEIGHT: usize = 16;
@@ -25,49 +26,49 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("A")
                 .set_direction(Direction::East)
                 .build(),
             GridPoint::new(2, 3),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("B")
                 .set_direction(Direction::East)
                 .build(),
             GridPoint::new(3, 3),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("C")
                 .set_direction(Direction::South)
                 .build(),
             GridPoint::new(4, 3),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("D")
                 .set_direction(Direction::South)
                 .build(),
             GridPoint::new(4, 4),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("E")
                 .set_direction(Direction::West)
                 .build(),
             GridPoint::new(4, 5),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("F")
                 .set_direction(Direction::West)
                 .build(),
             GridPoint::new(3, 5),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("G")
                 .set_direction(Direction::North)
                 .build(),
             GridPoint::new(2, 5),
         );
-        self.add_conveyer(
+        self.add_fixture(
             ConveyerBuilder::new("H")
                 .set_direction(Direction::North)
                 .build(),
@@ -75,8 +76,8 @@ impl Field {
         );
     }
 
-    pub fn add_conveyer(&mut self, conveyer: Conveyer, grid_point: GridPoint) {
-        self.tiles[grid_point.to_index(WIDTH)].set_conveyer(conveyer);
+    pub fn add_fixture(&mut self, fixture: Box<dyn Fixture>, grid_point: GridPoint) {
+        self.tiles[grid_point.to_index(WIDTH)].set_fixture(fixture);
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
@@ -92,13 +93,13 @@ impl Field {
                 context.transform,
                 gl,
             );
-            if let Some(conveyer) = tile.conveyer() {
+            if let Some(fixture) = tile.fixture() {
                 let mut context: Context = *context;
                 context.transform = context.transform.trans(
                     tile.x as f64 * Self::TILE_SIZE,
                     tile.y as f64 * Self::TILE_SIZE,
                 );
-                conveyer.render(gl, &context);
+                fixture.render(gl, &context);
                 context.reset();
             }
         }
@@ -141,28 +142,8 @@ impl Field {
     }
 
     pub fn update(&mut self, dt: f64) {
-        for i in 0..self.tiles.len() - 1 {
-            let target_index = if let Some(conveyer) = self.tiles[i].conveyer() {
-                self.relative_index(i, conveyer.direction())
-            } else {
-                None
-            };
-
-            if self.tiles[i].conveyer().is_some() {
-                if let Some(target_index) = target_index {
-                    if let Ok([current_tile, target_tile]) =
-                        self.tiles.get_many_mut([i, target_index])
-                    {
-                        if let Some(ref mut current_conveyer) = current_tile.conveyer_mut() {
-                            if let Some(ref mut target_conveyer) = target_tile.conveyer_mut() {
-                                current_conveyer.update(dt, Some(target_conveyer));
-                            } else {
-                                current_conveyer.update(dt, None);
-                            }
-                        }
-                    }
-                }
-            }
+        for tile in self.tiles.iter_mut() {
+            tile.update(dt);
         }
     }
 
@@ -176,15 +157,15 @@ impl Field {
 
             match args.button {
                 piston::Button::Mouse(piston::MouseButton::Left) => {
-                    if let Some(conveyer) = &mut self.tiles[point.to_index(WIDTH)].conveyer_mut() {
-                        conveyer.on_click();
+                    if let Some(fixture) = &mut self.tiles[point.to_index(WIDTH)].fixture_mut() {
+                        fixture.on_click();
                     } else {
-                        self.add_conveyer(Conveyer::new("D"), GridPoint::new(x, y));
+                        self.add_fixture(ConveyerBuilder::new("D").build(), GridPoint::new(x, y));
                     }
                 }
                 piston::Button::Keyboard(piston::Key::R) => {
-                    if let Some(conveyer) = &mut self.tiles[point.to_index(WIDTH)].conveyer_mut() {
-                        conveyer.rotate();
+                    if let Some(fixture) = &mut self.tiles[point.to_index(WIDTH)].fixture_mut() {
+                        fixture.rotate();
                     }
                 }
                 _ => (),

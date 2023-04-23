@@ -2,10 +2,10 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use crate::machine::{Clickable, MachineCore};
 use crate::resource::Resource;
 use crate::types;
 use crate::Slot;
+use crate::{Fixture, Iterator};
 
 #[derive(Debug)]
 pub struct Conveyer {
@@ -17,15 +17,6 @@ pub struct Conveyer {
 }
 
 impl Conveyer {
-    pub fn new(name: &'static str) -> Self {
-        Self {
-            name,
-            slots: (0..4).map(|_| Slot::default()).collect(),
-            cooling_time: 0.0,
-            direction: Default::default(),
-        }
-    }
-
     pub fn load(&mut self) {
         if let Some(last_slot) = self.slots.last_mut() {
             let _ = last_slot.push(Some(Resource::default()));
@@ -48,18 +39,6 @@ impl Conveyer {
         }
     }
 
-    fn acceptable(&self) -> bool {
-        if let Some(last_slot) = self.slots.last() {
-            last_slot.is_empty()
-        } else {
-            false
-        }
-    }
-
-    pub fn rotate(&mut self) {
-        self.set_direction(self.direction().next());
-    }
-
     fn width(&self) -> f64 {
         50.0
     }
@@ -72,10 +51,6 @@ impl Conveyer {
         types::Size::new(self.width(), self.height())
     }
 
-    pub fn direction(&self) -> &types::Direction {
-        &self.direction
-    }
-
     fn set_direction(&mut self, direction: types::Direction) {
         self.direction = direction;
     }
@@ -84,16 +59,71 @@ impl Conveyer {
         self.direction().angle()
     }
 
-    fn update(&mut self) {
-        println!("Conveyer update: {:?}", self);
-        for i in 0..(self.slots.len() - 1) {
-            if self.slots[i].is_empty() {
-                self.slots.swap(i, i + 1);
-            }
-        }
+    // TODO: implement this
+    // fn insert {
+    //   for i in 0..self.tiles.len() - 1 {
+    //       let target_index = if let Some(fixture) = self.tiles[i].fixture() {
+    //           self.relative_index(i, fixture.direction())
+    //       } else {
+    //           None
+    //       };
+    //
+    //       if self.tiles[i].fixture().is_some() {
+    //           if let Some(target_index) = target_index {
+    //               if let Ok([current_tile, target_tile]) =
+    //                   self.tiles.get_many_mut([i, target_index])
+    //               {
+    //                   if let Some(ref mut current_fixture) = current_tile.fixture_mut() {
+    //                       if let Some(ref mut target_fixture) = target_tile.fixture_mut() {
+    //                           current_fixture.update(dt, Some(target_fixture));
+    //                       } else {
+    //                           current_fixture.update(dt, None);
+    //                       }
+    //                   }
+    //               }
+    //           }
+    //       }
+    //   }
+    // }
+    // fn update(&mut self, target: Option<&mut Self>) {
+    //     if let Some(target) = target {
+    //         if target.acceptable() {
+    //             target.push(self.pick()).unwrap();
+    //         }
+    //     }
+    // }
+}
+
+impl Fixture for Conveyer {
+    fn direction(&self) -> &types::Direction {
+        &self.direction
     }
 
-    pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
+    fn rotate(&mut self) {
+        self.set_direction(self.direction().next());
+    }
+
+    fn on_click(&mut self) {
+        self.load();
+    }
+
+    fn update(&mut self, dt: f64) {
+        self.before_update(dt);
+        if self.operatable() {
+            self.iterate();
+        }
+        self.after_update();
+    }
+
+    fn set_cooling_time(&mut self, dt: f64) {
+        self.cooling_time = dt;
+    }
+
+    fn cooling_time(&self) -> f64 {
+        self.cooling_time
+    }
+
+    fn render(&self, gl: &mut GlGraphics, context: &Context) {
         const BODY: [f32; 4] = [0.749, 0.741, 0.329, 1.0];
         const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
 
@@ -136,31 +166,35 @@ impl Conveyer {
     }
 }
 
-impl MachineCore<Resource> for Conveyer {
-    fn set_cooling_time(&mut self, dt: f64) {
-        self.cooling_time = dt;
-    }
-
-    fn cooling_time(&self) -> f64 {
-        self.cooling_time
-    }
-
-    fn main(&mut self, target: Option<&mut Self>) {
-        if let Some(target) = target {
-            if target.acceptable() {
-                target.push(self.pick()).unwrap();
+impl Iterator for Conveyer {
+    fn iterate(&mut self) {
+        println!("Conveyer iterate: {:?}", self);
+        for i in 0..(self.slots.len() - 1) {
+            if self.slots[i].is_empty() {
+                self.slots.swap(i, i + 1);
             }
         }
-
-        self.update();
     }
 }
 
-impl Clickable for Conveyer {
-    fn on_click(&mut self) {
-        self.load();
-    }
-}
+// TODO: implement this
+// impl Pushable for Conveyer {
+//     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+//         if let Some(first_slot) = self.slots.first_mut() {
+//             first_slot.push(resource)
+//         } else {
+//             Err("No slot to push")
+//         }
+//     }
+//
+//     fn acceptable(&self) -> bool {
+//         if let Some(last_slot) = self.slots.last() {
+//             last_slot.is_empty()
+//         } else {
+//             false
+//         }
+//     }
+// }
 
 pub struct ConveyerBuilder {
     name: &'static str,
@@ -180,13 +214,13 @@ impl ConveyerBuilder {
         self
     }
 
-    pub fn build(&mut self) -> Conveyer {
+    pub fn build(&mut self) -> Box<dyn Fixture> {
         let direction = self.direction.take().unwrap_or_default();
-        Conveyer {
+        Box::new(Conveyer {
             name: self.name,
             slots: (0..4).map(|_| Slot::default()).collect(),
             cooling_time: 0.0,
             direction,
-        }
+        })
     }
 }
