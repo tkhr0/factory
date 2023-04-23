@@ -13,7 +13,6 @@ use piston::input::{ButtonEvent, MouseCursorEvent, RenderEvent, UpdateEvent};
 use piston::window::WindowSettings;
 
 mod app;
-mod container;
 mod field;
 mod grid_point;
 mod machine;
