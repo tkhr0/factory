@@ -4,7 +4,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::grid_point::GridPoint;
-use crate::machine::{Clickable, Machine, MachineCore};
+use crate::machine::{Clickable, Machine, MachineBuilder, MachineCore};
 use crate::tile::Tile;
 use crate::types::{Direction, Point};
 
@@ -25,9 +25,54 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.add_machine(Machine::new("A"), GridPoint::new(2, 3));
-        self.add_machine(Machine::new("B"), GridPoint::new(3, 3));
-        self.add_machine(Machine::new("C"), GridPoint::new(4, 3));
+        self.add_machine(
+            MachineBuilder::new("A")
+                .set_direction(Direction::East)
+                .build(),
+            GridPoint::new(2, 3),
+        );
+        self.add_machine(
+            MachineBuilder::new("B")
+                .set_direction(Direction::East)
+                .build(),
+            GridPoint::new(3, 3),
+        );
+        self.add_machine(
+            MachineBuilder::new("C")
+                .set_direction(Direction::South)
+                .build(),
+            GridPoint::new(4, 3),
+        );
+        self.add_machine(
+            MachineBuilder::new("D")
+                .set_direction(Direction::South)
+                .build(),
+            GridPoint::new(4, 4),
+        );
+        self.add_machine(
+            MachineBuilder::new("E")
+                .set_direction(Direction::West)
+                .build(),
+            GridPoint::new(4, 5),
+        );
+        self.add_machine(
+            MachineBuilder::new("F")
+                .set_direction(Direction::West)
+                .build(),
+            GridPoint::new(3, 5),
+        );
+        self.add_machine(
+            MachineBuilder::new("G")
+                .set_direction(Direction::North)
+                .build(),
+            GridPoint::new(2, 5),
+        );
+        self.add_machine(
+            MachineBuilder::new("H")
+                .set_direction(Direction::North)
+                .build(),
+            GridPoint::new(2, 4),
+        );
     }
 
     pub fn add_machine(&mut self, machine: Machine, grid_point: GridPoint) {

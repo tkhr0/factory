@@ -6,6 +6,35 @@ use crate::container::Container;
 use crate::resource::Resource;
 use crate::types;
 
+pub struct MachineBuilder {
+    name: &'static str,
+    direction: Option<types::Direction>,
+}
+
+impl MachineBuilder {
+    pub fn new(name: &'static str) -> Self {
+        MachineBuilder {
+            name,
+            direction: Default::default(),
+        }
+    }
+
+    pub fn set_direction(&mut self, direction: types::Direction) -> &mut Self {
+        self.direction = Some(direction);
+        self
+    }
+
+    pub fn build(&mut self) -> Machine {
+        let direction = self.direction.take().unwrap_or_default();
+        Machine {
+            name: self.name,
+            container: Container::new(),
+            cooling_time: 0.0,
+            direction,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Machine {
     #[allow(dead_code)]
