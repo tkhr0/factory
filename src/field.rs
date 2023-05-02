@@ -107,43 +107,6 @@ impl Field {
         }
     }
 
-    fn relative_index(&self, index: usize, direction: &Direction) -> Option<usize> {
-        let x = index % WIDTH;
-        let y = index / WIDTH;
-
-        match direction {
-            Direction::North => {
-                if y == 0 {
-                    None
-                } else {
-                    Some(index - WIDTH)
-                }
-            }
-            Direction::South => {
-                if y == HEIGHT - 1 {
-                    None
-                } else {
-                    Some(index + WIDTH)
-                }
-            }
-            Direction::West => {
-                if x == 0 {
-                    None
-                } else {
-                    Some(index - 1)
-                }
-            }
-            Direction::East => {
-                if x == WIDTH - 1 {
-                    None
-                } else {
-                    Some(index + 1)
-                }
-            }
-            Direction::None => None,
-        }
-    }
-
     fn relative_direction(&self, base_index: usize, other_index: usize) -> Direction {
         let base_x = base_index % WIDTH;
         let base_y = base_index / WIDTH;
@@ -366,7 +329,7 @@ impl TileIterator {
             if 0 < y { y - diff_height } else { y },
         );
         // FIXME: サイズオーバーする
-        let end = GridPoint::new(x + diff_width, y + diff_height); 
+        let end = GridPoint::new(x + diff_width, y + diff_height);
 
         Self {
             target_index,

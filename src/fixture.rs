@@ -46,7 +46,7 @@ where
     fn name(&self) -> &'static str;
 }
 
-impl Debug for Box<dyn Fixture> {
+impl Debug for dyn Fixture {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         f.debug_struct("Fixture")
             .field("name", &self.name())

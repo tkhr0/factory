@@ -132,11 +132,6 @@ impl Fixture for Conveyer {
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
         if direction == self.direction() && target.acceptable() {
             if let Some(resource) = self.pick() {
-                println!(
-                    "AFFECT: self: {:?}, target: {:?}",
-                    self,
-                    target.fixture().unwrap()
-                );
                 target.push(Some(resource)).unwrap();
                 println!(
                     "slots({}): {:?}",

@@ -1,7 +1,7 @@
 use crate::resource::Resource;
 use crate::types::Direction;
 use crate::Fixture;
-use crate::{GridPoint, GridSize};
+use crate::GridSize;
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -15,8 +15,12 @@ impl Tile {
         self.fixture = Some(fixture);
     }
 
-    pub fn fixture(&self) -> Option<&Box<dyn Fixture>> {
-        self.fixture.as_ref()
+    pub fn fixture(&self) -> Option<&dyn Fixture> {
+        if let Some(fixture) = self.fixture.as_ref() {
+            Some(fixture.as_ref())
+        } else {
+            None
+        }
     }
 
     pub fn fixture_mut(&mut self) -> Option<&mut Box<dyn Fixture>> {
