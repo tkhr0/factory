@@ -5,6 +5,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
+use crate::machine::ContainerBuilder;
 use crate::machine::ConveyerBuilder;
 use crate::tile::Tile;
 use crate::types::{Direction, Point};
@@ -76,6 +77,8 @@ impl Field {
                 .build(),
             GridPoint::new(2, 4),
         );
+
+        self.add_fixture(ContainerBuilder::new("C1").build(), GridPoint::new(6, 3));
     }
 
     pub fn add_fixture(&mut self, fixture: Box<dyn Fixture>, grid_point: GridPoint) {
