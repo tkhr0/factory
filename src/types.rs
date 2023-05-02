@@ -22,13 +22,15 @@ impl Size {
 
 pub type Radian = f64;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 #[rustfmt::skip]
 pub enum Direction {
        #[default]
        North,
     West, East,
        South,
+
+    None,
 }
 
 impl Direction {
@@ -38,6 +40,7 @@ impl Direction {
             Self::West => std::f64::consts::FRAC_PI_2 * 3.0,
             Self::East => std::f64::consts::FRAC_PI_2,
             Self::South => std::f64::consts::PI,
+            Self::None => 0.0,
         }
     }
 
@@ -47,6 +50,7 @@ impl Direction {
             Self::East => Self::South,
             Self::South => Self::West,
             Self::West => Self::North,
+            Self::None => Self::None,
         }
     }
 }

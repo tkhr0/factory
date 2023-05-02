@@ -3,7 +3,9 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use crate::resource::Resource;
+use crate::tile::Tile;
 use crate::types;
+use crate::GridSize;
 use crate::Slot;
 use crate::{Fixture, Iterator};
 
@@ -31,14 +33,6 @@ impl Conveyer {
         }
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
-        if let Some(last_slot) = self.slots.last_mut() {
-            last_slot.push(resource)
-        } else {
-            Err("No slot to push")
-        }
-    }
-
     fn width(&self) -> f64 {
         50.0
     }
@@ -58,40 +52,6 @@ impl Conveyer {
     fn angle(&self) -> types::Radian {
         self.direction().angle()
     }
-
-    // TODO: implement this
-    // fn insert {
-    //   for i in 0..self.tiles.len() - 1 {
-    //       let target_index = if let Some(fixture) = self.tiles[i].fixture() {
-    //           self.relative_index(i, fixture.direction())
-    //       } else {
-    //           None
-    //       };
-    //
-    //       if self.tiles[i].fixture().is_some() {
-    //           if let Some(target_index) = target_index {
-    //               if let Ok([current_tile, target_tile]) =
-    //                   self.tiles.get_many_mut([i, target_index])
-    //               {
-    //                   if let Some(ref mut current_fixture) = current_tile.fixture_mut() {
-    //                       if let Some(ref mut target_fixture) = target_tile.fixture_mut() {
-    //                           current_fixture.update(dt, Some(target_fixture));
-    //                       } else {
-    //                           current_fixture.update(dt, None);
-    //                       }
-    //                   }
-    //               }
-    //           }
-    //       }
-    //   }
-    // }
-    // fn update(&mut self, target: Option<&mut Self>) {
-    //     if let Some(target) = target {
-    //         if target.acceptable() {
-    //             target.push(self.pick()).unwrap();
-    //         }
-    //     }
-    // }
 }
 
 impl Fixture for Conveyer {
@@ -164,11 +124,59 @@ impl Fixture for Conveyer {
             }
         }
     }
+
+    fn effect_range(&self) -> Option<GridSize> {
+        Some((3, 3).into())
+    }
+
+    fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
+        if direction == self.direction() && target.acceptable() {
+            if let Some(resource) = self.pick() {
+                println!(
+                    "AFFECT: self: {:?}, target: {:?}",
+                    self,
+                    target.fixture().unwrap()
+                );
+                target.push(Some(resource)).unwrap();
+                println!(
+                    "slots({}): {:?}",
+                    target.fixture().unwrap().name(),
+                    target.fixture().unwrap().slots()
+                );
+            }
+        }
+    }
+
+    fn acceptable(&self) -> bool {
+        if let Some(last_slot) = self.slots.last() {
+            last_slot.is_empty()
+        } else {
+            false
+        }
+    }
+
+    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+        println!("PUSH: {:?}", resource);
+        println!("slots({}): {:?}", self.name, self.slots);
+        if let Some(last_slot) = self.slots.last_mut() {
+            last_slot.push(resource)
+        } else {
+            Err("No slot to push")
+        }
+    }
+
+    fn slots(&self) -> &Vec<Slot> {
+        &self.slots
+    }
+
+    fn name(&self) -> &'static str {
+        self.name
+    }
 }
 
 impl Iterator for Conveyer {
     fn iterate(&mut self) {
-        println!("Conveyer iterate: {:?}", self);
+        println!("ITERATE({}): {:?}", self.name, self.slots);
         for i in 0..(self.slots.len() - 1) {
             if self.slots[i].is_empty() {
                 self.slots.swap(i, i + 1);
@@ -176,25 +184,6 @@ impl Iterator for Conveyer {
         }
     }
 }
-
-// TODO: implement this
-// impl Pushable for Conveyer {
-//     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
-//         if let Some(first_slot) = self.slots.first_mut() {
-//             first_slot.push(resource)
-//         } else {
-//             Err("No slot to push")
-//         }
-//     }
-//
-//     fn acceptable(&self) -> bool {
-//         if let Some(last_slot) = self.slots.last() {
-//             last_slot.is_empty()
-//         } else {
-//             false
-//         }
-//     }
-// }
 
 pub struct ConveyerBuilder {
     name: &'static str,

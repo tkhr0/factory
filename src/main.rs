@@ -24,6 +24,7 @@ mod types;
 
 use app::App;
 use fixture::{Fixture, Iterator};
+use grid_point::{GridPoint, GridSize};
 use slot::Slot;
 use types::Point;
 

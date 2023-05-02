@@ -1,4 +1,7 @@
+use crate::resource::Resource;
+use crate::types::Direction;
 use crate::Fixture;
+use crate::{GridPoint, GridSize};
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -23,6 +26,40 @@ impl Tile {
     pub fn update(&mut self, dt: f64) {
         if let Some(fixture) = self.fixture_mut() {
             fixture.update(dt);
+        }
+    }
+
+    pub fn effect_range(&self) -> Option<GridSize> {
+        if let Some(fixture) = self.fixture() {
+            fixture.effect_range()
+        } else {
+            None
+        }
+    }
+
+    pub fn affect(&mut self, other: &mut Self, direction: Direction) {
+        if self.fixture.is_none() {
+            return;
+        }
+
+        if let Some(fixture) = self.fixture_mut() {
+            fixture.affect(other, &direction);
+        }
+    }
+
+    pub fn acceptable(&self) -> bool {
+        if let Some(fixture) = self.fixture() {
+            fixture.acceptable()
+        } else {
+            false
+        }
+    }
+
+    pub fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+        if let Some(fixture) = self.fixture_mut() {
+            fixture.push(resource)
+        } else {
+            Err("No fixture")
         }
     }
 }

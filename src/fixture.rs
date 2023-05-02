@@ -3,7 +3,11 @@ use std::fmt::{Debug, Error, Formatter};
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
+use crate::resource::Resource;
+use crate::slot::Slot;
+use crate::tile::Tile;
 use crate::types;
+use crate::GridSize;
 
 pub trait Fixture
 where
@@ -31,40 +35,26 @@ where
 
     fn set_cooling_time(&mut self, dt: f64);
     fn cooling_time(&self) -> f64;
+
+    fn effect_range(&self) -> Option<GridSize>;
+    fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
+    fn acceptable(&self) -> bool;
+    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
+
+    // Debug
+    fn slots(&self) -> &Vec<Slot>;
+    fn name(&self) -> &'static str;
 }
 
 impl Debug for Box<dyn Fixture> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        f.debug_struct("Fixture").finish()
+        f.debug_struct("Fixture")
+            .field("name", &self.name())
+            .field("slots", &self.slots())
+            .finish()
     }
 }
 
 pub trait Iterator {
     fn iterate(&mut self);
 }
-
-// pub trait Passable where Self: Pickable {
-//     fn pass(&mut self, target: Option<&mut Box<dyn Pushable>>) -> Result<(), &'static str> {
-//         if let Some(target) = target {
-//             if target.acceptable() {
-//                 return target.push(self.pick());
-//             }
-//         }
-//         Ok(())
-//     }
-// }
-//
-// pub trait Pushable {
-//     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
-//     fn acceptable(&self) -> bool;
-// }
-//
-// pub trait Pickable {
-//     fn pick(&mut self) -> Option<Resource>;
-// }
-//
-// impl Debug for Box<dyn Pushable> {
-//     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-//         f.debug_struct("Pushable").finish()
-//     }
-// }
