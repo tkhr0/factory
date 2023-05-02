@@ -57,7 +57,7 @@ where
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
 
     // Debug
-    fn slots(&self) -> &Vec<Slot>;
+    fn slots(&self) -> &[Slot];
     fn name(&self) -> &'static str;
 }
 

@@ -9,13 +9,13 @@ use crate::GridSize;
 use crate::Slot;
 use crate::{Fixture, Iterator};
 
-pub struct Container {
+pub struct Container<const N: usize> {
     name: &'static str,
-    slots: Vec<Slot>,
+    slots: [Slot; N],
     direction: types::Direction,
 }
 
-impl Container {
+impl<const N: usize> Container<N> {
     fn width(&self) -> f64 {
         50.0
     }
@@ -37,7 +37,7 @@ impl Container {
     }
 }
 
-impl Fixture for Container {
+impl<const N: usize> Fixture for Container<N> {
     fn direction(&self) -> &types::Direction {
         &self.direction
     }
@@ -125,7 +125,7 @@ impl Fixture for Container {
     }
 
     // Debug
-    fn slots(&self) -> &Vec<Slot> {
+    fn slots(&self) -> &[Slot] {
         &self.slots
     }
 
@@ -134,7 +134,7 @@ impl Fixture for Container {
     }
 }
 
-impl Iterator for Container {
+impl<const N: usize> Iterator for Container<N> {
     fn iterate(&mut self) {}
 }
 
@@ -152,9 +152,9 @@ impl ContainerBuilder {
     }
 
     pub fn build(self) -> Box<dyn Fixture> {
-        Box::new(Container {
+        Box::new(Container::<16> {
             name: self.name,
-            slots: (0..16).map(|_| Slot::default()).collect(),
+            slots: core::array::from_fn(|_| Slot::default()),
             direction: self.direction,
         })
     }

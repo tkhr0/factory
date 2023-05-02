@@ -10,15 +10,15 @@ use crate::Slot;
 use crate::{Fixture, Iterator};
 
 #[derive(Debug)]
-pub struct Conveyer {
+pub struct Conveyer<const N: usize> {
     #[allow(dead_code)]
     name: &'static str,
-    slots: Vec<Slot>,
+    slots: [Slot; N],
     cooling_time: f64,
     direction: types::Direction,
 }
 
-impl Conveyer {
+impl<const N: usize> Conveyer<N> {
     pub fn load(&mut self) {
         if let Some(last_slot) = self.slots.last_mut() {
             let _ = last_slot.push(Some(Resource::default()));
@@ -50,7 +50,7 @@ impl Conveyer {
     }
 }
 
-impl Fixture for Conveyer {
+impl<const N: usize> Fixture for Conveyer<N> {
     fn direction(&self) -> &types::Direction {
         &self.direction
     }
@@ -148,7 +148,7 @@ impl Fixture for Conveyer {
         }
     }
 
-    fn slots(&self) -> &Vec<Slot> {
+    fn slots(&self) -> &[Slot] {
         &self.slots
     }
 
@@ -157,7 +157,7 @@ impl Fixture for Conveyer {
     }
 }
 
-impl Iterator for Conveyer {
+impl<const N: usize> Iterator for Conveyer<N> {
     fn iterate(&mut self) {
         println!("ITERATE({}): {:?}", self.name, self.slots);
         for i in 0..(self.slots.len() - 1) {
@@ -188,9 +188,10 @@ impl ConveyerBuilder {
 
     pub fn build(&mut self) -> Box<dyn Fixture> {
         let direction = self.direction.take().unwrap_or_default();
-        Box::new(Conveyer {
+
+        Box::new(Conveyer::<4> {
             name: self.name,
-            slots: (0..4).map(|_| Slot::default()).collect(),
+            slots: core::array::from_fn(|_| Slot::default()),
             cooling_time: 0.0,
             direction,
         })
