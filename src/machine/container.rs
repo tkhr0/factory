@@ -16,10 +16,6 @@ pub struct Container {
 }
 
 impl Container {
-    fn set_direction(&mut self, direction: types::Direction) {
-        self.direction = direction;
-    }
-
     fn width(&self) -> f64 {
         50.0
     }
@@ -44,6 +40,10 @@ impl Container {
 impl Fixture for Container {
     fn direction(&self) -> &types::Direction {
         &self.direction
+    }
+
+    fn set_direction(&mut self, direction: types::Direction) {
+        self.direction = direction;
     }
 
     fn render(&self, gl: &mut GlGraphics, context: &Context) {
@@ -88,10 +88,6 @@ impl Fixture for Container {
                 );
             }
         }
-    }
-
-    fn rotate(&mut self) {
-        self.set_direction(self.direction().next());
     }
 
     fn on_click(&mut self) {

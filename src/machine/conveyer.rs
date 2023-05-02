@@ -45,10 +45,6 @@ impl Conveyer {
         types::Size::new(self.width(), self.height())
     }
 
-    fn set_direction(&mut self, direction: types::Direction) {
-        self.direction = direction;
-    }
-
     fn angle(&self) -> types::Radian {
         self.direction().angle()
     }
@@ -59,20 +55,12 @@ impl Fixture for Conveyer {
         &self.direction
     }
 
-    fn rotate(&mut self) {
-        self.set_direction(self.direction().next());
+    fn set_direction(&mut self, direction: types::Direction) {
+        self.direction = direction;
     }
 
     fn on_click(&mut self) {
         self.load();
-    }
-
-    fn update(&mut self, dt: f64) {
-        self.before_update(dt);
-        if self.operatable() {
-            self.iterate();
-        }
-        self.after_update();
     }
 
     fn set_cooling_time(&mut self, dt: f64) {

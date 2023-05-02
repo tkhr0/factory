@@ -14,10 +14,16 @@ where
     Self: Iterator,
 {
     fn direction(&self) -> &types::Direction;
+    fn set_direction(&mut self, direction: types::Direction);
+
+    fn rotate(&mut self) {
+        self.set_direction(self.direction().next());
+    }
+
     fn render(&self, gl: &mut GlGraphics, context: &Context);
-    fn rotate(&mut self);
+
     fn on_click(&mut self);
-    fn update(&mut self, dt: f64);
+
 
     fn before_update(&mut self, dt: f64) {
         self.set_cooling_time(self.cooling_time() + dt);
@@ -28,6 +34,15 @@ where
             self.set_cooling_time(0.0);
         }
     }
+
+    fn update(&mut self, dt: f64) {
+        self.before_update(dt);
+        if self.operatable() {
+            self.iterate();
+        }
+        self.after_update();
+    }
+
 
     fn operatable(&self) -> bool {
         self.cooling_time() > 0.5
