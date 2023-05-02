@@ -2,12 +2,12 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
+use super::{Fixture, Iterator};
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
 use crate::GridSize;
 use crate::Slot;
-use crate::{Fixture, Iterator};
 
 pub struct Container<const N: usize> {
     name: &'static str,

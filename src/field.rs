@@ -5,11 +5,9 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
-use crate::machine::ContainerBuilder;
-use crate::machine::ConveyerBuilder;
+use crate::fixture::{ContainerBuilder, ConveyerBuilder, Fixture};
 use crate::tile::Tile;
 use crate::types::{Direction, Point};
-use crate::Fixture;
 use crate::GridPoint;
 
 const WIDTH: usize = 16;

@@ -1,6 +1,6 @@
+use crate::fixture::Fixture;
 use crate::resource::Resource;
 use crate::types::Direction;
-use crate::Fixture;
 use crate::GridSize;
 
 #[derive(Debug, Default)]
