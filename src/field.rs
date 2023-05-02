@@ -7,8 +7,7 @@ use piston::input::{ButtonArgs, ButtonState};
 
 use crate::fixture::{ContainerBuilder, ConveyerBuilder, Fixture};
 use crate::tile::Tile;
-use crate::types::{Direction, Point};
-use crate::GridPoint;
+use crate::types::{Direction, GridPoint, Point};
 
 const WIDTH: usize = 16;
 const HEIGHT: usize = 16;

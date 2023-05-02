@@ -7,7 +7,6 @@ use crate::resource::Resource;
 use crate::slot::Slot;
 use crate::tile::Tile;
 use crate::types;
-use crate::GridSize;
 
 pub trait Fixture
 where
@@ -49,7 +48,7 @@ where
     fn set_cooling_time(&mut self, dt: f64);
     fn cooling_time(&self) -> f64;
 
-    fn effect_range(&self) -> Option<GridSize>;
+    fn effect_range(&self) -> Option<types::GridSize>;
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
     fn acceptable(&self) -> bool;
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;

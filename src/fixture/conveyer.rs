@@ -6,7 +6,6 @@ use super::{Fixture, Iterator};
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
-use crate::GridSize;
 use crate::Slot;
 
 #[derive(Debug)]
@@ -113,7 +112,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
         }
     }
 
-    fn effect_range(&self) -> Option<GridSize> {
+    fn effect_range(&self) -> Option<types::GridSize> {
         Some((3, 3).into())
     }
 

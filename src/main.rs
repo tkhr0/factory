@@ -15,14 +15,12 @@ use piston::window::WindowSettings;
 mod app;
 mod field;
 mod fixture;
-mod grid_point;
 mod resource;
 mod slot;
 mod tile;
 mod types;
 
 use app::App;
-use grid_point::{GridPoint, GridSize};
 use slot::Slot;
 use types::Point;
 

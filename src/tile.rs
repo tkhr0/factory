@@ -1,7 +1,7 @@
 use crate::fixture::Fixture;
 use crate::resource::Resource;
+use crate::types;
 use crate::types::Direction;
-use crate::GridSize;
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -33,7 +33,7 @@ impl Tile {
         }
     }
 
-    pub fn effect_range(&self) -> Option<GridSize> {
+    pub fn effect_range(&self) -> Option<types::GridSize> {
         if let Some(fixture) = self.fixture() {
             fixture.effect_range()
         } else {

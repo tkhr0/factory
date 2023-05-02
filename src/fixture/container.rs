@@ -6,7 +6,6 @@ use super::{Fixture, Iterator};
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
-use crate::GridSize;
 use crate::Slot;
 
 pub struct Container<const N: usize> {
@@ -105,7 +104,7 @@ impl<const N: usize> Fixture for Container<N> {
         0.0
     }
 
-    fn effect_range(&self) -> Option<GridSize> {
+    fn effect_range(&self) -> Option<types::GridSize> {
         None
     }
     fn affect(&mut self, _target: &mut Tile, _direction: &types::Direction) {}
