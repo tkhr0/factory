@@ -2,39 +2,12 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use super::{Fixture, Iterator};
+use super::Container;
+use crate::item::{Fixture, Iterator};
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
 use crate::Slot;
-
-pub struct Container<const N: usize> {
-    name: &'static str,
-    slots: [Slot; N],
-    direction: types::Direction,
-}
-
-impl<const N: usize> Container<N> {
-    fn width(&self) -> f64 {
-        50.0
-    }
-
-    fn height(&self) -> f64 {
-        50.0
-    }
-
-    fn size(&self) -> types::Size {
-        types::Size::new(self.width(), self.height())
-    }
-
-    fn angle(&self) -> types::Radian {
-        self.direction().angle()
-    }
-
-    fn load(&mut self) {
-        let _ = self.push(Some(Resource::default()));
-    }
-}
 
 impl<const N: usize> Fixture for Container<N> {
     fn direction(&self) -> &types::Direction {
@@ -135,26 +108,4 @@ impl<const N: usize> Fixture for Container<N> {
 
 impl<const N: usize> Iterator for Container<N> {
     fn iterate(&mut self) {}
-}
-
-pub struct ContainerBuilder {
-    name: &'static str,
-    direction: types::Direction,
-}
-
-impl ContainerBuilder {
-    pub fn new(name: &'static str) -> Self {
-        Self {
-            name,
-            direction: Default::default(),
-        }
-    }
-
-    pub fn build(self) -> Box<dyn Fixture> {
-        Box::new(Container::<16> {
-            name: self.name,
-            slots: core::array::from_fn(|_| Slot::default()),
-            direction: self.direction,
-        })
-    }
 }

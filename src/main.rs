@@ -14,7 +14,6 @@ use piston::window::WindowSettings;
 
 mod app;
 mod field;
-mod fixture;
 mod hud;
 mod item;
 mod player_state;

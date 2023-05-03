@@ -1,4 +1,4 @@
-use crate::item::Item;
+use crate::item::Sign;
 
 #[derive(Default)]
 pub struct PlayerState {
@@ -16,11 +16,11 @@ impl PlayerState {
 }
 
 pub struct QuickSlot {
-    items: [Option<Box<dyn Item>>; 10],
+    items: [Option<Box<dyn Sign>>; 10],
 }
 
 impl QuickSlot {
-    pub fn items(&self) -> &[Option<Box<dyn Item>>; 10] {
+    pub fn items(&self) -> &[Option<Box<dyn Sign>>; 10] {
         &self.items
     }
 
@@ -38,7 +38,7 @@ impl Default for QuickSlot {
 }
 
 pub struct QuickSlotBuilder {
-    items: Option<[Option<Box<dyn Item>>; 10]>,
+    items: Option<[Option<Box<dyn Sign>>; 10]>,
 }
 
 impl QuickSlotBuilder {

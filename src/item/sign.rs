@@ -4,7 +4,7 @@ use opengl_graphics::GlGraphics;
 
 use crate::types;
 
-pub trait Item {
+pub trait Sign {
     fn color(&self) -> types::Color;
     fn size(&self) -> types::Size;
 

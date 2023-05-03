@@ -2,56 +2,16 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use super::{Fixture, Iterator};
+use super::Conveyer;
+use crate::item::{Fixture, Iterator};
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
 use crate::Slot;
 
-#[derive(Debug)]
-pub struct Conveyer<const N: usize> {
-    #[allow(dead_code)]
-    name: &'static str,
-    slots: [Slot; N],
-    cooling_time: f64,
-    direction: types::Direction,
-}
-
-impl<const N: usize> Conveyer<N> {
-    pub fn load(&mut self) {
-        if let Some(last_slot) = self.slots.last_mut() {
-            let _ = last_slot.push(Some(Resource::default()));
-        }
-    }
-
-    fn pick(&mut self) -> Option<Resource> {
-        if let Some(first_slot) = self.slots.first_mut() {
-            first_slot.pick()
-        } else {
-            None
-        }
-    }
-
-    fn width(&self) -> f64 {
-        50.0
-    }
-
-    fn height(&self) -> f64 {
-        50.0
-    }
-
-    fn size(&self) -> types::Size {
-        types::Size::new(self.width(), self.height())
-    }
-
-    fn angle(&self) -> types::Radian {
-        self.direction().angle()
-    }
-}
-
 impl<const N: usize> Fixture for Conveyer<N> {
     fn direction(&self) -> &types::Direction {
-        &self.direction
+        self.direction()
     }
 
     fn set_direction(&mut self, direction: types::Direction) {
@@ -71,12 +31,11 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        const BODY: [f32; 4] = [0.749, 0.741, 0.329, 1.0];
         const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
 
         let size = self.size();
 
-        graphics::Rectangle::new(BODY).draw(
+        graphics::Rectangle::new(Self::COLOR_BODY).draw(
             [0.0, 0.0, size.width, size.height],
             &context.draw_state,
             context.transform,
@@ -138,13 +97,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
-        println!("PUSH: {:?}", resource);
-        println!("slots({}): {:?}", self.name, self.slots);
-        if let Some(last_slot) = self.slots.last_mut() {
-            last_slot.push(resource)
-        } else {
-            Err("No slot to push")
-        }
+        Conveyer::push(self, resource)
     }
 
     fn slots(&self) -> &[Slot] {
@@ -164,35 +117,5 @@ impl<const N: usize> Iterator for Conveyer<N> {
                 self.slots.swap(i, i + 1);
             }
         }
-    }
-}
-
-pub struct ConveyerBuilder {
-    name: &'static str,
-    direction: Option<types::Direction>,
-}
-
-impl ConveyerBuilder {
-    pub fn new(name: &'static str) -> Self {
-        Self {
-            name,
-            direction: Default::default(),
-        }
-    }
-
-    pub fn set_direction(&mut self, direction: types::Direction) -> &mut Self {
-        self.direction = Some(direction);
-        self
-    }
-
-    pub fn build(&mut self) -> Box<dyn Fixture> {
-        let direction = self.direction.take().unwrap_or_default();
-
-        Box::new(Conveyer::<4> {
-            name: self.name,
-            slots: core::array::from_fn(|_| Slot::default()),
-            cooling_time: 0.0,
-            direction,
-        })
     }
 }

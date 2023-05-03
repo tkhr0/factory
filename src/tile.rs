@@ -1,4 +1,4 @@
-use crate::fixture::Fixture;
+use crate::item::Fixture;
 use crate::resource::Resource;
 use crate::types;
 use crate::types::Direction;
