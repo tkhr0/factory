@@ -249,7 +249,7 @@ impl Iterator for &mut TileRange {
 #[cfg(test)]
 mod test {
     use self::super::TileRange;
-    use crate::GridPoint;
+    use crate::types::GridPoint;
 
     #[test]
     fn test_tile_range() {
@@ -362,9 +362,9 @@ impl Iterator for TileIterator {
 mod test_tile_iterator {
     use crate::{
         field::{SIZE, WIDTH},
-        machine::ConveyerBuilder,
+        fixture::ConveyerBuilder,
         tile::Tile,
-        GridPoint,
+        types::GridPoint,
     };
 
     #[test]

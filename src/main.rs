@@ -15,6 +15,9 @@ use piston::window::WindowSettings;
 mod app;
 mod field;
 mod fixture;
+mod hud;
+mod item;
+mod player_state;
 mod resource;
 mod slot;
 mod tile;
@@ -29,7 +32,7 @@ fn main() {
     let opengl = OpenGL::V3_2;
 
     // Create a Glutin window.
-    let mut window: Window = WindowSettings::new("spinning-square", [500, 500])
+    let mut window: Window = WindowSettings::new("factory", [1300, 700])
         .graphics_api(opengl)
         .exit_on_esc(true)
         .build()
