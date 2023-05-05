@@ -12,6 +12,7 @@ use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{ButtonEvent, MouseCursorEvent, RenderEvent, UpdateEvent};
 use piston::window::WindowSettings;
+use piston::ResizeEvent;
 
 mod app;
 mod field;
@@ -30,18 +31,20 @@ use slot::Slot;
 use types::Point;
 
 fn main() {
+    const WINDOW_SIZE: types::Size = types::Size::new(1300.0, 700.0);
+
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
 
     // Create a Glutin window.
-    let mut window: Window = WindowSettings::new("factory", [1300, 700])
+    let mut window: Window = WindowSettings::new("factory", WINDOW_SIZE)
         .graphics_api(opengl)
         .exit_on_esc(true)
         .build()
         .unwrap();
 
     // Create a new game and run it.
-    let mut app = App::new(GlGraphics::new(opengl));
+    let mut app = App::new(WINDOW_SIZE, GlGraphics::new(opengl));
 
     let builders = &Default::default();
     app.initialize(builders);
@@ -49,6 +52,10 @@ fn main() {
     let mut mouse_pos = Point::new(0.0, 0.0);
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
+        if let Some(args) = e.resize_args() {
+            app.resize(&args);
+        }
+
         if let Some(args) = e.render_args() {
             app.render(&args);
         }

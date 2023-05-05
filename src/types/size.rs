@@ -1,10 +1,21 @@
+use piston::Size as pistonSize;
+
 pub struct Size {
     pub width: f64,
     pub height: f64,
 }
 
 impl Size {
-    pub fn new(width: f64, height: f64) -> Size {
-        Size { width, height }
+    pub const fn new(width: f64, height: f64) -> Self {
+        Self { width, height }
+    }
+}
+
+impl From<Size> for pistonSize {
+    fn from(val: Size) -> Self {
+        piston::Size {
+            width: val.width,
+            height: val.height,
+        }
     }
 }
