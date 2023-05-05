@@ -5,7 +5,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
-use crate::item::{ContainerBuilder, ConveyerBuilder, Fixture};
+use crate::item::{Builder, ContainerBuilder, ConveyerBuilder, Fixture};
 use crate::tile::Tile;
 use crate::types::{Direction, GridPoint, Point};
 
@@ -362,7 +362,7 @@ impl Iterator for TileIterator {
 mod test_tile_iterator {
     use crate::{
         field::{SIZE, WIDTH},
-        item::ConveyerBuilder,
+        item::{Builder, ConveyerBuilder},
         tile::Tile,
         types::GridPoint,
     };

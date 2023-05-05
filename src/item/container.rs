@@ -1,3 +1,4 @@
+use crate::item::Item;
 use crate::resource::Resource;
 use crate::types;
 use crate::Slot;
@@ -8,6 +9,9 @@ pub use container_builder::*;
 mod container_fixture;
 pub use container_fixture::*;
 
+mod container_sign;
+pub use container_sign::*;
+
 pub struct Container<const N: usize> {
     name: &'static str,
     slots: [Slot; N],
@@ -15,6 +19,8 @@ pub struct Container<const N: usize> {
 }
 
 impl<const N: usize> Container<N> {
+    const COLOR_BODY: types::Color = [0.8117, 0.5019, 0.0078, 1.0];
+
     fn width(&self) -> f64 {
         50.0
     }
@@ -49,3 +55,5 @@ impl<const N: usize> Container<N> {
         }
     }
 }
+
+impl<const N: usize> Item for Container<N> {}

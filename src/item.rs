@@ -11,3 +11,5 @@ pub use container::*;
 
 mod conveyer;
 pub use conveyer::*;
+
+pub trait Item: Fixture + Sign {}

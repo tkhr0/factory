@@ -1,6 +1,6 @@
 pub type Radian = f64;
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone, Copy)]
 #[rustfmt::skip]
 pub enum Direction {
        #[default]

@@ -7,6 +7,7 @@ pub use conveyer_fixture::*;
 mod conveyer_sign;
 pub use conveyer_sign::*;
 
+use crate::item::Item;
 use crate::resource::Resource;
 use crate::types;
 use crate::Slot;
@@ -67,3 +68,5 @@ impl<const N: usize> Conveyer<N> {
         }
     }
 }
+
+impl<const N: usize> Item for Conveyer<N> {}

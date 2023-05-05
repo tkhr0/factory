@@ -1,11 +1,11 @@
 use super::Conveyer;
-use crate::item::{Builder, Fixture};
+use crate::item::{Builder, Item};
 use crate::types;
 use crate::Slot;
 
 pub struct ConveyerBuilder {
     name: &'static str,
-    direction: Option<types::Direction>,
+    direction: types::Direction,
 }
 
 impl ConveyerBuilder {
@@ -17,20 +17,18 @@ impl ConveyerBuilder {
     }
 
     pub fn set_direction(&mut self, direction: types::Direction) -> &mut Self {
-        self.direction = Some(direction);
+        self.direction = direction;
         self
     }
+}
 
-    pub fn build(&mut self) -> Box<dyn Fixture> {
-        let direction = self.direction.take().unwrap_or_default();
-
+impl Builder for ConveyerBuilder {
+    fn build(&self) -> Box<dyn Item> {
         Box::new(Conveyer::<4> {
             name: self.name,
             slots: core::array::from_fn(|_| Slot::default()),
             cooling_time: 0.0,
-            direction,
+            direction: self.direction,
         })
     }
 }
-
-impl Builder for ConveyerBuilder {}

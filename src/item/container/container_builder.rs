@@ -1,4 +1,5 @@
-use crate::item::{Builder, Container, Fixture};
+use super::Container;
+use crate::item::{Builder, Item};
 use crate::types;
 use crate::Slot;
 
@@ -14,8 +15,10 @@ impl ContainerBuilder {
             direction: Default::default(),
         }
     }
+}
 
-    pub fn build(self) -> Box<dyn Fixture> {
+impl Builder for ContainerBuilder {
+    fn build(&self) -> Box<dyn Item> {
         Box::new(Container::<16> {
             name: self.name,
             slots: core::array::from_fn(|_| Slot::default()),
@@ -23,5 +26,3 @@ impl ContainerBuilder {
         })
     }
 }
-
-impl Builder for ContainerBuilder {}

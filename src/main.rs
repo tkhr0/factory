@@ -1,5 +1,6 @@
 #![feature(get_many_mut)]
 #![feature(associated_type_defaults)]
+#![feature(trait_upcasting)]
 
 extern crate glutin_window;
 extern crate graphics;

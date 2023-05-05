@@ -19,12 +19,11 @@ impl<const N: usize> Fixture for Container<N> {
     }
 
     fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        const BODY: [f32; 4] = [0.8117, 0.5019, 0.0078, 1.0];
         const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
 
         let size = self.size();
 
-        graphics::Rectangle::new(BODY).draw(
+        graphics::Rectangle::new(Self::COLOR_BODY).draw(
             [0.0, 0.0, size.width, size.height],
             &context.draw_state,
             context.transform,
