@@ -5,15 +5,16 @@ use crate::field::Field;
 use crate::hud::Hud;
 use crate::player_state::PlayerState;
 use crate::types::Point;
+use crate::ItemBuilders;
 
-pub struct App {
+pub struct App<'a> {
     gl: GlGraphics, // OpenGL drawing backend.
     field: Field,
-    player_state: PlayerState,
+    player_state: PlayerState<'a>,
 }
 
-impl App {
-    pub fn new(gl: GlGraphics) -> App {
+impl<'a> App<'a> {
+    pub fn new<'b>(gl: GlGraphics) -> App<'b> {
         App {
             gl,
             field: Field::new(),
@@ -21,9 +22,9 @@ impl App {
         }
     }
 
-    pub fn initialize(&mut self) {
+    pub fn initialize(&mut self, builders: &'a ItemBuilders) {
         self.field.initialize();
-        self.player_state.initialize();
+        self.player_state.initialize(builders);
     }
 
     pub fn render(&mut self, args: &RenderArgs) {

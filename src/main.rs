@@ -17,6 +17,7 @@ mod app;
 mod field;
 mod hud;
 mod item;
+mod item_builders;
 mod player_state;
 mod resource;
 mod slot;
@@ -24,6 +25,7 @@ mod tile;
 mod types;
 
 use app::App;
+use item_builders::ItemBuilders;
 use slot::Slot;
 use types::Point;
 
@@ -41,7 +43,8 @@ fn main() {
     // Create a new game and run it.
     let mut app = App::new(GlGraphics::new(opengl));
 
-    app.initialize();
+    let builders = &Default::default();
+    app.initialize(builders);
 
     let mut mouse_pos = Point::new(0.0, 0.0);
     let mut events = Events::new(EventSettings::new());

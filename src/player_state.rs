@@ -1,13 +1,14 @@
-use crate::item::Sign;
+use crate::item::Builder;
+use crate::ItemBuilders;
 
 #[derive(Default)]
-pub struct PlayerState {
-    quick_slot: QuickSlot,
+pub struct PlayerState<'a> {
+    quick_slot: QuickSlot<'a>,
 }
 
-impl PlayerState {
-    pub fn initialize(&mut self) {
-        self.quick_slot = QuickSlotBuilder::new().build();
+impl<'a> PlayerState<'a> {
+    pub fn initialize(&mut self, builders: &'a ItemBuilders) {
+        self.quick_slot = QuickSlot::new(builders);
     }
 
     pub fn quick_slot(&self) -> &QuickSlot {
@@ -15,42 +16,35 @@ impl PlayerState {
     }
 }
 
-pub struct QuickSlot {
-    items: [Option<Box<dyn Sign>>; 10],
+pub struct QuickSlot<'a> {
+    builders: [Option<&'a dyn Builder>; 10],
 }
 
-impl QuickSlot {
-    pub fn items(&self) -> &[Option<Box<dyn Sign>>; 10] {
-        &self.items
+impl<'a> QuickSlot<'a> {
+    pub fn new(builders: &'a ItemBuilders) -> Self {
+        let mut item_builders: [Option<&dyn Builder>; 10] = core::array::from_fn(|_| None);
+
+        item_builders[0] = Some(&builders.conveyer);
+        item_builders[1] = Some(&builders.container);
+
+        Self {
+            builders: item_builders,
+        }
+    }
+
+    pub fn builders(&self) -> &[Option<&'a dyn Builder>; 10] {
+        &self.builders
     }
 
     pub fn len(&self) -> usize {
-        self.items.len()
+        self.builders.len()
     }
 }
 
-impl Default for QuickSlot {
+impl<'a> Default for QuickSlot<'a> {
     fn default() -> Self {
         QuickSlot {
-            items: core::array::from_fn(|_| None),
-        }
-    }
-}
-
-pub struct QuickSlotBuilder {
-    items: Option<[Option<Box<dyn Sign>>; 10]>,
-}
-
-impl QuickSlotBuilder {
-    pub fn new() -> Self {
-        Self {
-            items: Some(core::array::from_fn(|_| None)),
-        }
-    }
-
-    pub fn build(&mut self) -> QuickSlot {
-        QuickSlot {
-            items: self.items.take().unwrap(),
+            builders: core::array::from_fn(|_| None),
         }
     }
 }

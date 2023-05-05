@@ -2,6 +2,7 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
+use crate::item::Sign;
 use crate::player_state::PlayerState;
 use crate::types;
 
@@ -40,7 +41,7 @@ impl Hud {
                 );
 
             // QuickSlot slots
-            for (i, item) in player_state.quick_slot().items().iter().enumerate() {
+            for (i, item) in player_state.quick_slot().builders().iter().enumerate() {
                 let mut context = *context;
                 context.transform = transform_quick_slot.trans(
                     PADDING_QUICK_SLOT + i as f64 * SLOT_WIDTH + i as f64 * PADDING_QUICK_SLOT,
@@ -56,7 +57,12 @@ impl Hud {
                     );
 
                 if let Some(item) = item {
-                    item.render(&context, gl, types::Size::new(SLOT_WIDTH, SLOT_HEIGHT));
+                    Sign::render(
+                        item.build().as_ref(),
+                        &context,
+                        gl,
+                        types::Size::new(SLOT_WIDTH, SLOT_HEIGHT),
+                    );
                 }
             }
         }
