@@ -26,18 +26,13 @@ impl QuickSlot {
 
     pub fn render(&self, context: &Context, gl: &mut GlGraphics, quick_slot: &QuickSlotState) {
         // QuickSlot frame
-        let quick_slot_size = (
-            Self::PADDING + (Self::SLOT_WIDTH + Self::PADDING) * self.slot_len as f64,
-            Self::SLOT_HEIGHT + Self::PADDING * 2.0,
-        );
-        let transform_quick_slot = context.transform.trans(
-            (self.hud_size.width - quick_slot_size.0) / 2.0,
-            self.hud_size.height - quick_slot_size.1 - 10.0,
-        );
+        let size = self.size();
+        let origin = self.origin();
+        let transform_quick_slot = context.transform.trans(origin.x, origin.y);
         graphics::Rectangle::new_border(Self::COLOR_UI_BORDER, 1.0)
             .color(Self::COLOR_UI_BODY)
             .draw(
-                [0.0, 0.0, quick_slot_size.0, quick_slot_size.1],
+                [0.0, 0.0, size.width, size.height],
                 &context.draw_state,
                 transform_quick_slot,
                 gl,
@@ -72,5 +67,21 @@ impl QuickSlot {
 
     pub fn resize(&mut self, hud_size: types::Size) {
         self.hud_size = hud_size;
+    }
+
+    fn size(&self) -> types::Size {
+        types::Size::new(
+            Self::PADDING + (Self::SLOT_WIDTH + Self::PADDING) * self.slot_len as f64,
+            Self::SLOT_HEIGHT + Self::PADDING * 2.0,
+        )
+    }
+
+    fn origin(&self) -> types::Point {
+        let size = self.size();
+
+        types::Point::new(
+            (self.hud_size.width - size.width) / 2.0,
+            self.hud_size.height - size.height - 10.0,
+        )
     }
 }
