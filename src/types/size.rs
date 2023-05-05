@@ -1,5 +1,6 @@
 use piston::Size as pistonSize;
 
+#[derive(Clone, Copy)]
 pub struct Size {
     pub width: f64,
     pub height: f64,

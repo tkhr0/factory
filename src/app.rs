@@ -17,11 +17,14 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     pub fn new<'b>(window_size: types::Size, gl: GlGraphics) -> App<'b> {
+        let player_state: PlayerState = Default::default();
+        let quick_slot_len = player_state.quick_slot().len();
+
         App {
             gl,
             field: Field::new(),
-            player_state: Default::default(),
-            hud: Hud::new(window_size),
+            player_state,
+            hud: Hud::new(window_size, quick_slot_len),
         }
     }
 
