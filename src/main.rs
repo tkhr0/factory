@@ -20,6 +20,7 @@ mod hud;
 mod item;
 mod item_builders;
 mod player_state;
+mod quick_slot;
 mod resource;
 mod slot;
 mod tile;
@@ -27,6 +28,7 @@ mod types;
 
 use app::App;
 use item_builders::ItemBuilders;
+use quick_slot::QuickSlot;
 use slot::Slot;
 use types::Point;
 
