@@ -49,6 +49,7 @@ impl<'a> App<'a> {
     }
 
     pub fn button(&mut self, args: &ButtonArgs, mouse_pos: &types::Point) {
+        self.hud.click(args, mouse_pos);
         self.field.on_click(args, mouse_pos);
     }
 

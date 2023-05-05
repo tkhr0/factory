@@ -1,5 +1,6 @@
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
+use piston::input::{ButtonArgs, ButtonState};
 use piston::ResizeArgs;
 
 use crate::player_state::PlayerState;
@@ -22,6 +23,14 @@ impl Hud {
     pub fn render(&self, context: &Context, gl: &mut GlGraphics, player_state: &PlayerState) {
         self.quick_slot
             .render(context, gl, player_state.quick_slot());
+    }
+
+    pub fn click(&mut self, args: &ButtonArgs, mouse_pos: &types::Point) {
+        if args.state == ButtonState::Press {
+            if let Some(index) = self.quick_slot.clicked(mouse_pos) {
+                println!("Clicked quick slot #{}", index);
+            }
+        }
     }
 
     pub fn resize(&mut self, args: &ResizeArgs) {

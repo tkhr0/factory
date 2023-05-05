@@ -69,6 +69,23 @@ impl QuickSlot {
         self.hud_size = hud_size;
     }
 
+    pub fn clicked(&self, pos: &types::Point) -> Option<usize> {
+        let origin = &self.origin();
+        let size = &self.size();
+
+        // Quick Slot is not clicked
+        let padding = types::Size::new(Self::PADDING, Self::PADDING);
+        if !((origin + &padding) <= *pos && *pos < (origin + &(size - &padding))) {
+            return None;
+        }
+
+        let local_pos = pos - origin;
+
+        // TODO: padding is not considered.
+        //       this is valid if click on padding.
+        Some((local_pos.x / (Self::SLOT_WIDTH + Self::PADDING)) as usize)
+    }
+
     fn size(&self) -> types::Size {
         types::Size::new(
             Self::PADDING + (Self::SLOT_WIDTH + Self::PADDING) * self.slot_len as f64,

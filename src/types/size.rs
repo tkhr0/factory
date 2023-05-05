@@ -1,3 +1,5 @@
+use std::ops::Sub;
+
 use piston::Size as pistonSize;
 
 #[derive(Clone, Copy)]
@@ -18,5 +20,13 @@ impl From<Size> for pistonSize {
             width: val.width,
             height: val.height,
         }
+    }
+}
+
+impl Sub for &Size {
+    type Output = Size;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Size::new(self.width - rhs.width, self.height - rhs.height)
     }
 }
