@@ -6,6 +6,7 @@ use crate::field::Field;
 use crate::hud::Hud;
 use crate::player_state::PlayerState;
 use crate::types;
+use crate::EventHandleState;
 use crate::QuickSlot;
 
 pub struct App {
@@ -48,8 +49,12 @@ impl App {
         mouse_pos: &types::Point,
         quick_slot: &mut QuickSlot,
     ) {
-        self.hud.click(args, mouse_pos, quick_slot);
-        self.field.on_click(args, mouse_pos);
+        let mut state: EventHandleState = Default::default();
+        state = self.hud.click(args, mouse_pos, state, quick_slot);
+
+        if !state.consumed() {
+            self.field.on_click(args, mouse_pos);
+        }
     }
 
     pub fn resize(&mut self, args: &ResizeArgs) {

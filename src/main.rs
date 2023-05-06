@@ -15,6 +15,7 @@ use piston::window::WindowSettings;
 use piston::ResizeEvent;
 
 mod app;
+mod event_handle_state;
 mod field;
 mod hud;
 mod item;
@@ -27,6 +28,7 @@ mod tile;
 mod types;
 
 use app::App;
+use event_handle_state::EventHandleState;
 use player_state::PlayerState;
 use quick_slot::QuickSlot;
 use slot::Slot;
@@ -74,7 +76,7 @@ fn main() {
         }
 
         if let Some(args) = e.button_args() {
-            println!("Button: {:?}", args);
+            println!("Button: {:?}, {:?}", args, mouse_pos);
             app.button(&args, &mouse_pos, player_state.quick_slot_mut());
         }
 

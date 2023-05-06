@@ -5,6 +5,7 @@ use piston::ResizeArgs;
 
 use crate::player_state::PlayerState;
 use crate::types;
+use crate::EventHandleState;
 use crate::QuickSlot as QuickSlotState;
 
 mod quick_slot;
@@ -30,14 +31,18 @@ impl Hud {
         &mut self,
         args: &ButtonArgs,
         mouse_pos: &types::Point,
+        mut event_handle_state: EventHandleState,
         quick_slot_state: &mut QuickSlotState,
-    ) {
+    ) -> EventHandleState {
         if args.state == ButtonState::Press {
             if let Some(index) = self.quick_slot.clicked(mouse_pos) {
                 println!("Clicked quick slot #{}", index);
                 quick_slot_state.select(index);
+                event_handle_state.consume();
             }
         }
+
+        event_handle_state
     }
 
     pub fn resize(&mut self, args: &ResizeArgs) {
