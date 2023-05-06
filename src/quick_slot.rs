@@ -1,35 +1,37 @@
-use crate::item::Builder;
-use crate::ItemBuilders;
+use crate::item::ItemVariant;
 
-pub struct QuickSlot<'a> {
-    builders: [Option<&'a dyn Builder>; 10],
+pub struct QuickSlot {
+    items: [Option<ItemVariant>; 10],
+    selected: usize,
 }
 
-impl<'a> QuickSlot<'a> {
-    pub fn new(builders: &'a ItemBuilders) -> Self {
-        let mut item_builders: [Option<&dyn Builder>; 10] = core::array::from_fn(|_| None);
-
-        item_builders[0] = Some(&builders.conveyer);
-        item_builders[1] = Some(&builders.container);
-
-        Self {
-            builders: item_builders,
-        }
-    }
-
-    pub fn builders(&self) -> &[Option<&'a dyn Builder>; 10] {
-        &self.builders
+impl QuickSlot {
+    pub fn items(&self) -> &[Option<ItemVariant>; 10] {
+        &self.items
     }
 
     pub fn len(&self) -> usize {
-        self.builders.len()
+        self.items.len()
+    }
+
+    pub fn select(&mut self, index: usize) {
+        self.selected = index;
+    }
+
+    pub fn selected(&self) -> usize {
+        self.selected
+    }
+
+    pub fn set_item(&mut self, index: usize, item: ItemVariant) {
+        self.items[index] = Some(item);
     }
 }
 
-impl<'a> Default for QuickSlot<'a> {
+impl Default for QuickSlot {
     fn default() -> Self {
         QuickSlot {
-            builders: core::array::from_fn(|_| None),
+            items: core::array::from_fn(|_| None),
+            selected: 0,
         }
     }
 }

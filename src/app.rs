@@ -6,41 +6,35 @@ use crate::field::Field;
 use crate::hud::Hud;
 use crate::player_state::PlayerState;
 use crate::types;
-use crate::ItemBuilders;
+use crate::QuickSlot;
 
-pub struct App<'a> {
+pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
     field: Field,
-    player_state: PlayerState<'a>,
     hud: Hud,
 }
 
-impl<'a> App<'a> {
-    pub fn new<'b>(window_size: types::Size, gl: GlGraphics) -> App<'b> {
-        let player_state: PlayerState = Default::default();
-        let quick_slot_len = player_state.quick_slot().len();
-
+impl App {
+    pub fn new(window_size: types::Size, gl: GlGraphics, quick_slot_len: usize) -> App {
         App {
             gl,
             field: Field::new(),
-            player_state,
             hud: Hud::new(window_size, quick_slot_len),
         }
     }
 
-    pub fn initialize(&mut self, builders: &'a ItemBuilders) {
+    pub fn initialize(&mut self) {
         self.field.initialize();
-        self.player_state.initialize(builders);
     }
 
-    pub fn render(&mut self, args: &RenderArgs) {
+    pub fn render(&mut self, args: &RenderArgs, player_state: &PlayerState) {
         const BACKGROUND: [f32; 4] = [252.0, 249.0, 230.0, 1.0];
 
         self.gl.draw(args.viewport(), |c, gl| {
             // Clear the screen.
             graphics::clear(BACKGROUND, gl);
             self.field.render(gl, &c);
-            self.hud.render(&c, gl, &self.player_state);
+            self.hud.render(&c, gl, player_state);
         });
     }
 
@@ -48,8 +42,13 @@ impl<'a> App<'a> {
         self.field.update(args.dt);
     }
 
-    pub fn button(&mut self, args: &ButtonArgs, mouse_pos: &types::Point) {
-        self.hud.click(args, mouse_pos);
+    pub fn button(
+        &mut self,
+        args: &ButtonArgs,
+        mouse_pos: &types::Point,
+        quick_slot: &mut QuickSlot,
+    ) {
+        self.hud.click(args, mouse_pos, quick_slot);
         self.field.on_click(args, mouse_pos);
     }
 

@@ -2,7 +2,7 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use crate::item::Sign;
+use crate::item::{ItemFactory, Sign};
 use crate::types;
 use crate::QuickSlot as QuickSlotState;
 
@@ -14,6 +14,7 @@ pub struct QuickSlot {
 impl QuickSlot {
     const COLOR_UI_BORDER: types::Color = [0.5098, 0.5098, 0.5019, 1.0];
     const COLOR_UI_BODY: types::Color = [0.5098, 0.5098, 0.5019, 0.7];
+    const COLOR_UI_SELECTED: types::Color = [0.9215, 0.3529, 0.3215, 0.5];
 
     const SLOT_WIDTH: f64 = 50.0;
     const SLOT_HEIGHT: f64 = 50.0;
@@ -39,7 +40,8 @@ impl QuickSlot {
             );
 
         // QuickSlot slots
-        for (i, item) in quick_slot.builders().iter().enumerate() {
+        let selected = quick_slot.selected();
+        for (i, item) in quick_slot.items().iter().enumerate() {
             let mut context = *context;
             context.transform = transform_quick_slot.trans(
                 Self::PADDING + i as f64 * Self::SLOT_WIDTH + i as f64 * Self::PADDING,
@@ -56,10 +58,19 @@ impl QuickSlot {
 
             if let Some(item) = item {
                 Sign::render(
-                    item.build().as_ref(),
+                    ItemFactory::build(*item).as_ref(),
                     &context,
                     gl,
                     types::Size::new(Self::SLOT_WIDTH, Self::SLOT_HEIGHT),
+                );
+            }
+
+            if i == selected {
+                graphics::Rectangle::new_border(Self::COLOR_UI_SELECTED, 1.0).draw(
+                    [0.0, 0.0, Self::SLOT_WIDTH, Self::SLOT_HEIGHT],
+                    &context.draw_state,
+                    context.transform,
+                    gl,
                 );
             }
         }
@@ -100,5 +111,29 @@ impl QuickSlot {
             (self.hud_size.width - size.width) / 2.0,
             self.hud_size.height - size.height - 10.0,
         )
+    }
+}
+
+#[cfg(test)]
+mod quick_slot_test {
+    mod clicked {
+        use crate::hud::quick_slot::QuickSlot;
+        use crate::types::{Point, Size};
+
+        #[test]
+        fn test_range_out_of_y_axis() {
+            let clicked =
+                QuickSlot::new(Size::new(500.0, 500.0), 1).clicked(&Point::new(235.0, 1.0));
+
+            assert_eq!(clicked, None);
+        }
+
+        #[test]
+        fn test_range_out_of_x_axis() {
+            let clicked =
+                QuickSlot::new(Size::new(500.0, 500.0), 1).clicked(&Point::new(1.0, 420.0));
+
+            assert_eq!(clicked, None);
+        }
     }
 }

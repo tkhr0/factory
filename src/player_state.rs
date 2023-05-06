@@ -1,17 +1,16 @@
-use crate::ItemBuilders;
 use crate::QuickSlot;
 
 #[derive(Default)]
-pub struct PlayerState<'a> {
-    quick_slot: QuickSlot<'a>,
+pub struct PlayerState {
+    quick_slot: QuickSlot,
 }
 
-impl<'a> PlayerState<'a> {
-    pub fn initialize(&mut self, builders: &'a ItemBuilders) {
-        self.quick_slot = QuickSlot::new(builders);
-    }
-
+impl PlayerState {
     pub fn quick_slot(&self) -> &QuickSlot {
         &self.quick_slot
+    }
+
+    pub fn quick_slot_mut(&mut self) -> &mut QuickSlot {
+        &mut self.quick_slot
     }
 }

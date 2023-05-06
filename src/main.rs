@@ -27,7 +27,7 @@ mod tile;
 mod types;
 
 use app::App;
-use item_builders::ItemBuilders;
+use player_state::PlayerState;
 use quick_slot::QuickSlot;
 use slot::Slot;
 use types::Point;
@@ -45,11 +45,18 @@ fn main() {
         .build()
         .unwrap();
 
-    // Create a new game and run it.
-    let mut app = App::new(WINDOW_SIZE, GlGraphics::new(opengl));
+    let mut player_state: PlayerState = Default::default();
+    let quick_slot = player_state.quick_slot_mut();
+    quick_slot.set_item(0, item::ItemVariant::Container);
+    quick_slot.set_item(1, item::ItemVariant::Conveyer);
 
-    let builders = &Default::default();
-    app.initialize(builders);
+    let mut app = App::new(
+        WINDOW_SIZE,
+        GlGraphics::new(opengl),
+        player_state.quick_slot().len(),
+    );
+
+    app.initialize();
 
     let mut mouse_pos = Point::new(0.0, 0.0);
     let mut events = Events::new(EventSettings::new());
@@ -59,7 +66,7 @@ fn main() {
         }
 
         if let Some(args) = e.render_args() {
-            app.render(&args);
+            app.render(&args, &player_state);
         }
 
         if let Some(mouse_args) = e.mouse_cursor_args() {
@@ -68,7 +75,7 @@ fn main() {
 
         if let Some(args) = e.button_args() {
             println!("Button: {:?}", args);
-            app.button(&args, &mouse_pos);
+            app.button(&args, &mouse_pos, player_state.quick_slot_mut());
         }
 
         if let Some(args) = e.update_args() {
