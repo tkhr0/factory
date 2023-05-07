@@ -95,6 +95,17 @@ impl<const N: usize> Fixture for Container<N> {
         Err("No empty slot")
     }
 
+    fn request(&mut self) -> Option<Resource> {
+        for slot in self.slots.iter_mut() {
+            let resource = slot.pick();
+            if resource.is_some() {
+                return resource;
+            }
+        }
+
+        None
+    }
+
     // Debug
     fn slots(&self) -> &[Slot] {
         &self.slots

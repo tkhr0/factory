@@ -2,4 +2,5 @@
 pub enum ItemVariant {
     Container,
     Conveyer,
+    Inserter,
 }

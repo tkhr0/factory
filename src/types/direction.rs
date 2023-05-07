@@ -31,4 +31,14 @@ impl Direction {
             Self::None => Self::None,
         }
     }
+
+    pub fn invert(&self) -> Self {
+        match self {
+            Self::North => Self::South,
+            Self::East => Self::West,
+            Self::South => Self::North,
+            Self::West => Self::East,
+            Self::None => Self::None,
+        }
+    }
 }

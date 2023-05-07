@@ -2,14 +2,14 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use super::Conveyer;
+use super::Inserter;
 use crate::item::{Fixture, Iterator};
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
 use crate::Slot;
 
-impl<const N: usize> Fixture for Conveyer<N> {
+impl<const N: usize> Fixture for Inserter<N> {
     fn direction(&self) -> &types::Direction {
         self.direction()
     }
@@ -18,9 +18,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
         self.direction = direction;
     }
 
-    fn on_click(&mut self) {
-        self.load();
-    }
+    fn on_click(&mut self) {}
 
     fn set_cooling_time(&mut self, dt: f64) {
         self.cooling_time = dt;
@@ -76,38 +74,37 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
-        if direction == self.direction() && target.acceptable() {
-            if let Some(resource) = self.pick() {
-                target.push(Some(resource)).unwrap();
-                println!(
-                    "slots({}): {:?}",
-                    target.fixture().unwrap().name(),
-                    target.fixture().unwrap().slots()
-                );
+        if self.having() {
+            // push
+            if direction == self.direction() && target.acceptable() {
+                if let Some(resource) = self.pick() {
+                    target.push(Some(resource)).unwrap();
+                    println!(
+                        "slots({}): {:?}",
+                        target.fixture().unwrap().name(),
+                        target.fixture().unwrap().slots()
+                    );
+                }
+            }
+        } else {
+            // pull
+            if self.acceptable() && direction == &self.direction().invert() {
+                if let Some(resource) = target.request() {
+                    self.push(Some(resource)).unwrap();
+                }
             }
         }
     }
 
     fn acceptable(&self) -> bool {
-        if let Some(last_slot) = self.slots.last() {
-            last_slot.is_empty()
-        } else {
-            false
-        }
+        Inserter::acceptable(self)
     }
 
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
-        Conveyer::push(self, resource)
+        Inserter::push(self, resource)
     }
 
     fn request(&mut self) -> Option<Resource> {
-        for slot in self.slots.iter_mut() {
-            let resource = slot.pick();
-            if resource.is_some() {
-                return resource;
-            }
-        }
-
         None
     }
 
@@ -120,13 +117,6 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 }
 
-impl<const N: usize> Iterator for Conveyer<N> {
-    fn iterate(&mut self) {
-        println!("ITERATE({}): {:?}", self.name, self.slots);
-        for i in 0..(self.slots.len() - 1) {
-            if self.slots[i].is_empty() {
-                self.slots.swap(i, i + 1);
-            }
-        }
-    }
+impl<const N: usize> Iterator for Inserter<N> {
+    fn iterate(&mut self) {}
 }

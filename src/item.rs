@@ -14,6 +14,9 @@ pub use container::*;
 mod conveyer;
 pub use conveyer::*;
 
+mod inserter;
+pub use inserter::*;
+
 mod item_factory;
 pub use item_factory::ItemFactory;
 

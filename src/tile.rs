@@ -66,4 +66,12 @@ impl Tile {
             Err("No fixture")
         }
     }
+
+    pub fn request(&mut self) -> Option<Resource> {
+        if let Some(fixture) = self.fixture_mut() {
+            fixture.request()
+        } else {
+            None
+        }
+    }
 }

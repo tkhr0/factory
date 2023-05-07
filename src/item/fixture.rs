@@ -52,6 +52,7 @@ where
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
     fn acceptable(&self) -> bool;
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
+    fn request(&mut self) -> Option<Resource>;
 
     // Debug
     fn slots(&self) -> &[Slot];
