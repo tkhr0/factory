@@ -5,7 +5,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
-use crate::item::{Builder, ContainerBuilder, ConveyerBuilder, Fixture};
+use crate::item::{Builder, ContainerBuilder, ConveyerBuilder, Fixture, Item};
 use crate::tile::Tile;
 use crate::types::{Direction, GridPoint, Point};
 
@@ -151,7 +151,12 @@ impl Field {
         }
     }
 
-    pub fn on_click(&mut self, args: &ButtonArgs, mouse_pos: &Point) {
+    pub fn on_click(
+        &mut self,
+        args: &ButtonArgs,
+        mouse_pos: &Point,
+        holding_item: Option<Box<dyn Item>>,
+    ) {
         if args.state == ButtonState::Press {
             let x = (mouse_pos.x / Self::TILE_SIZE) as usize;
             let y = (mouse_pos.y / Self::TILE_SIZE) as usize;
@@ -163,8 +168,8 @@ impl Field {
                 piston::Button::Mouse(piston::MouseButton::Left) => {
                     if let Some(fixture) = &mut self.tiles[point.as_index(WIDTH)].fixture_mut() {
                         fixture.on_click();
-                    } else {
-                        self.add_fixture(ConveyerBuilder::new("D").build(), GridPoint::new(x, y));
+                    } else if let Some(item) = holding_item {
+                        self.add_fixture(item, point);
                     }
                 }
                 piston::Button::Keyboard(piston::Key::R) => {

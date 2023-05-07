@@ -25,6 +25,10 @@ impl QuickSlot {
     pub fn set_item(&mut self, index: usize, item: ItemVariant) {
         self.items[index] = Some(item);
     }
+
+    pub fn selected_item(&self) -> Option<ItemVariant> {
+        self.items[self.selected]
+    }
 }
 
 impl Default for QuickSlot {

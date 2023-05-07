@@ -14,4 +14,7 @@ pub use container::*;
 mod conveyer;
 pub use conveyer::*;
 
+mod item_factory;
+pub use item_factory::ItemFactory;
+
 pub trait Item: Fixture + Sign {}

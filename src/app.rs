@@ -4,6 +4,7 @@ use piston::ResizeArgs;
 
 use crate::field::Field;
 use crate::hud::Hud;
+use crate::item::ItemFactory;
 use crate::player_state::PlayerState;
 use crate::types;
 use crate::EventHandleState;
@@ -53,7 +54,11 @@ impl App {
         state = self.hud.click(args, mouse_pos, state, quick_slot);
 
         if !state.consumed() {
-            self.field.on_click(args, mouse_pos);
+            self.field.on_click(
+                args,
+                mouse_pos,
+                quick_slot.selected_item().map(ItemFactory::build),
+            );
         }
     }
 
