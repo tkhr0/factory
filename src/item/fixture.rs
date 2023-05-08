@@ -3,10 +3,10 @@ use std::fmt::{Debug, Error, Formatter};
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
-use crate::resource::Resource;
-use crate::slot::Slot;
-use crate::tile::Tile;
 use crate::types;
+use crate::Resource;
+use crate::Slot;
+use crate::Tile;
 
 pub trait Fixture {
     fn direction(&self) -> &types::Direction;

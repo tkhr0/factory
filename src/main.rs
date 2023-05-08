@@ -29,9 +29,14 @@ mod types;
 
 use app::App;
 use event_handle_state::EventHandleState;
+use field::Field;
+use hud::Hud;
+use item::Item;
 use player_state::PlayerState;
 use quick_slot::QuickSlot;
+use resource::Resource;
 use slot::Slot;
+use tile::Tile;
 use types::Point;
 
 fn main() {

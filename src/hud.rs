@@ -3,9 +3,9 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 use piston::ResizeArgs;
 
-use crate::player_state::PlayerState;
 use crate::types;
 use crate::EventHandleState;
+use crate::PlayerState;
 use crate::QuickSlot as QuickSlotState;
 
 mod quick_slot;

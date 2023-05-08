@@ -7,9 +7,9 @@ pub use inserter_fixture::*;
 mod inserter_sign;
 pub use inserter_sign::*;
 
-use crate::item::Item;
-use crate::resource::Resource;
 use crate::types;
+use crate::Item;
+use crate::Resource;
 use crate::Slot;
 
 pub struct Inserter<const N: usize> {

@@ -1,7 +1,6 @@
 use crate::item::Fixture;
-use crate::resource::Resource;
 use crate::types;
-use crate::types::Direction;
+use crate::Resource;
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -41,7 +40,7 @@ impl Tile {
         }
     }
 
-    pub fn affect(&mut self, other: &mut Self, direction: Direction) {
+    pub fn affect(&mut self, other: &mut Self, direction: types::Direction) {
         if self.fixture.is_none() {
             return;
         }

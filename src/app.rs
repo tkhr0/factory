@@ -2,12 +2,12 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, RenderArgs, UpdateArgs};
 use piston::ResizeArgs;
 
-use crate::field::Field;
-use crate::hud::Hud;
 use crate::item::ItemFactory;
-use crate::player_state::PlayerState;
 use crate::types;
 use crate::EventHandleState;
+use crate::Field;
+use crate::Hud;
+use crate::PlayerState;
 use crate::QuickSlot;
 
 pub struct App {

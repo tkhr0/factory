@@ -1,6 +1,6 @@
-use crate::item::Item;
-use crate::resource::Resource;
 use crate::types;
+use crate::Item;
+use crate::Resource;
 use crate::Slot;
 
 mod container_builder;

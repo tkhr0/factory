@@ -4,10 +4,10 @@ use opengl_graphics::GlGraphics;
 
 use super::Conveyer;
 use crate::item::Fixture;
-use crate::resource::Resource;
-use crate::tile::Tile;
 use crate::types;
+use crate::Resource;
 use crate::Slot;
+use crate::Tile;
 
 impl<const N: usize> Fixture for Conveyer<N> {
     fn direction(&self) -> &types::Direction {

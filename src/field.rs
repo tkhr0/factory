@@ -6,8 +6,8 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::item::{Builder, ContainerBuilder, ConveyerBuilder, Fixture, Item};
-use crate::tile::Tile;
 use crate::types::{Direction, GridPoint, Point};
+use crate::Tile;
 
 const WIDTH: usize = 16;
 const HEIGHT: usize = 16;

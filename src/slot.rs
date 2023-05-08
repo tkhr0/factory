@@ -1,4 +1,4 @@
-use crate::resource::Resource;
+use crate::Resource;
 
 #[derive(Debug, Default)]
 pub struct Slot {

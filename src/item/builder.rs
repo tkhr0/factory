@@ -1,4 +1,4 @@
-use crate::item::Item;
+use crate::Item;
 
 pub trait Builder {
     fn build(&self) -> Box<dyn Item>;
