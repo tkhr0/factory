@@ -79,11 +79,6 @@ impl<const N: usize> Fixture for Inserter<N> {
             if direction == self.direction() && target.insertable() {
                 if let Some(resource) = self.pick() {
                     target.insert(resource).unwrap();
-                    println!(
-                        "slots({}): {:?}",
-                        target.fixture().unwrap().name(),
-                        target.fixture().unwrap().slots()
-                    );
                 }
             }
         } else {

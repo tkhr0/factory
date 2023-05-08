@@ -36,7 +36,6 @@ impl Hud {
     ) -> EventHandleState {
         if args.state == ButtonState::Press {
             if let Some(index) = self.quick_slot.clicked(mouse_pos) {
-                println!("Clicked quick slot #{}", index);
                 quick_slot_state.select(index);
                 event_handle_state.consume();
             }

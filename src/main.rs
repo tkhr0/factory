@@ -77,7 +77,6 @@ fn main() {
         }
 
         if let Some(args) = e.button_args() {
-            println!("Button: {:?}, {:?}", args, mouse_pos);
             app.button(&args, &mouse_pos, player_state.quick_slot_mut());
         }
 

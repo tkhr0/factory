@@ -162,8 +162,6 @@ impl Field {
             let y = (mouse_pos.y / Self::TILE_SIZE) as usize;
             let point: GridPoint = GridPoint::new(x, y);
 
-            println!("clicked: x: {}, y: {}", point.x, point.y);
-
             match args.button {
                 piston::Button::Mouse(piston::MouseButton::Left) => {
                     if let Some(fixture) = &mut self.tiles[point.as_index(WIDTH)].fixture_mut() {

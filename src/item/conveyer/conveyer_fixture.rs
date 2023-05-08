@@ -79,11 +79,6 @@ impl<const N: usize> Fixture for Conveyer<N> {
         if self.operatable() && direction == self.direction() && target.pushable() {
             if let Some(resource) = self.pick() {
                 target.push(Some(resource)).unwrap();
-                println!(
-                    "slots({}): {:?}",
-                    target.fixture().unwrap().name(),
-                    target.fixture().unwrap().slots()
-                );
             }
         }
     }
@@ -116,7 +111,6 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn iterate(&mut self) {
-        println!("ITERATE({}): {:?}", self.name, self.slots);
         for i in 0..(self.slots.len() - 1) {
             if self.slots[i].is_empty() {
                 self.slots.swap(i, i + 1);

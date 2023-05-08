@@ -46,8 +46,6 @@ impl<const N: usize> Container<N> {
     }
 
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
-        println!("PUSH: {:?}", resource);
-        println!("slots({}): {:?}", self.name, self.slots);
         if let Some(last_slot) = self.slots.last_mut() {
             last_slot.push(resource)
         } else {
