@@ -4,7 +4,7 @@ mod item_variant;
 mod sign;
 
 pub use builder::Builder;
-pub use fixture::{Fixture, Iterator};
+pub use fixture::Fixture;
 pub use item_variant::ItemVariant;
 pub use sign::Sign;
 

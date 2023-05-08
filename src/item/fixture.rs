@@ -8,10 +8,7 @@ use crate::slot::Slot;
 use crate::tile::Tile;
 use crate::types;
 
-pub trait Fixture
-where
-    Self: Iterator,
-{
+pub trait Fixture {
     fn direction(&self) -> &types::Direction;
     fn set_direction(&mut self, direction: types::Direction);
 
@@ -47,6 +44,8 @@ where
     fn cooling_time(&self) -> f64;
 
     fn effect_range(&self) -> Option<types::GridSize>;
+    fn iterate(&mut self);
+
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
     fn acceptable(&self) -> bool;
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
@@ -64,8 +63,4 @@ impl Debug for dyn Fixture {
             .field("slots", &self.slots())
             .finish()
     }
-}
-
-pub trait Iterator {
-    fn iterate(&mut self);
 }

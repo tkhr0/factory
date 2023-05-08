@@ -3,7 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Conveyer;
-use crate::item::{Fixture, Iterator};
+use crate::item::Fixture;
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
@@ -111,16 +111,6 @@ impl<const N: usize> Fixture for Conveyer<N> {
         None
     }
 
-    fn slots(&self) -> &[Slot] {
-        &self.slots
-    }
-
-    fn name(&self) -> &'static str {
-        self.name
-    }
-}
-
-impl<const N: usize> Iterator for Conveyer<N> {
     fn iterate(&mut self) {
         println!("ITERATE({}): {:?}", self.name, self.slots);
         for i in 0..(self.slots.len() - 1) {
@@ -128,5 +118,13 @@ impl<const N: usize> Iterator for Conveyer<N> {
                 self.slots.swap(i, i + 1);
             }
         }
+    }
+
+    fn slots(&self) -> &[Slot] {
+        &self.slots
+    }
+
+    fn name(&self) -> &'static str {
+        self.name
     }
 }

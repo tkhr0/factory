@@ -3,7 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Inserter;
-use crate::item::{Fixture, Iterator};
+use crate::item::Fixture;
 use crate::resource::Resource;
 use crate::tile::Tile;
 use crate::types;
@@ -108,6 +108,8 @@ impl<const N: usize> Fixture for Inserter<N> {
         None
     }
 
+    fn iterate(&mut self) {}
+
     fn slots(&self) -> &[Slot] {
         &self.slots
     }
@@ -115,8 +117,4 @@ impl<const N: usize> Fixture for Inserter<N> {
     fn name(&self) -> &'static str {
         self.name
     }
-}
-
-impl<const N: usize> Iterator for Inserter<N> {
-    fn iterate(&mut self) {}
 }
