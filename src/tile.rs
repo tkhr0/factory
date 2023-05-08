@@ -51,9 +51,25 @@ impl Tile {
         }
     }
 
-    pub fn acceptable(&self) -> bool {
+    pub fn insertable(&self) -> bool {
         if let Some(fixture) = self.fixture() {
-            fixture.acceptable()
+            fixture.insertable()
+        } else {
+            false
+        }
+    }
+
+    pub fn insert(&mut self, resource: Resource) -> Result<(), &'static str> {
+        if let Some(fixture) = self.fixture_mut() {
+            fixture.insert(resource)
+        } else {
+            Err("No fixture")
+        }
+    }
+
+    pub fn pushable(&self) -> bool {
+        if let Some(fixture) = self.fixture() {
+            fixture.pushable()
         } else {
             false
         }

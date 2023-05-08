@@ -76,7 +76,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
-        if self.operatable() && direction == self.direction() && target.acceptable() {
+        if self.operatable() && direction == self.direction() && target.pushable() {
             if let Some(resource) = self.pick() {
                 target.push(Some(resource)).unwrap();
                 println!(
@@ -88,12 +88,16 @@ impl<const N: usize> Fixture for Conveyer<N> {
         }
     }
 
-    fn acceptable(&self) -> bool {
-        if let Some(last_slot) = self.slots.last() {
-            last_slot.is_empty()
-        } else {
-            false
-        }
+    fn insertable(&self) -> bool {
+        self.acceptable()
+    }
+
+    fn insert(&mut self, resource: Resource) -> Result<(), &'static str> {
+        Conveyer::push(self, Some(resource))
+    }
+
+    fn pushable(&self) -> bool {
+        self.acceptable()
     }
 
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {

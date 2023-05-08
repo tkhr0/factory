@@ -47,8 +47,14 @@ pub trait Fixture {
     fn iterate(&mut self);
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
-    fn acceptable(&self) -> bool;
+
+    fn insertable(&self) -> bool;
+    fn insert(&mut self, resource: Resource) -> Result<(), &'static str>;
+
+    // for conveyers
+    fn pushable(&self) -> bool;
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
+
     fn request(&mut self) -> Option<Resource>;
 
     // Debug

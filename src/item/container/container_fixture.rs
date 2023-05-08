@@ -81,18 +81,26 @@ impl<const N: usize> Fixture for Container<N> {
     }
     fn affect(&mut self, _target: &mut Tile, _direction: &types::Direction) {}
 
-    fn acceptable(&self) -> bool {
+    fn insertable(&self) -> bool {
         self.slots.iter().any(|slot| slot.is_empty())
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    fn insert(&mut self, resource: Resource) -> Result<(), &'static str> {
         for slot in self.slots.iter_mut() {
             if slot.is_empty() {
-                return slot.push(resource);
+                return slot.push(Some(resource));
             }
         }
 
         Err("No empty slot")
+    }
+
+    fn pushable(&self) -> bool {
+        false
+    }
+
+    fn push(&mut self, _resource: Option<Resource>) -> Result<(), &'static str> {
+        Err("No operation")
     }
 
     fn request(&mut self) -> Option<Resource> {

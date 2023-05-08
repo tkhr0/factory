@@ -75,10 +75,10 @@ impl<const N: usize> Fixture for Inserter<N> {
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
         if self.having() && self.operatable() {
-            // push
-            if direction == self.direction() && target.acceptable() {
+            // insert
+            if direction == self.direction() && target.insertable() {
                 if let Some(resource) = self.pick() {
-                    target.push(Some(resource)).unwrap();
+                    target.insert(resource).unwrap();
                     println!(
                         "slots({}): {:?}",
                         target.fixture().unwrap().name(),
@@ -96,8 +96,16 @@ impl<const N: usize> Fixture for Inserter<N> {
         }
     }
 
-    fn acceptable(&self) -> bool {
-        Inserter::acceptable(self)
+    fn insertable(&self) -> bool {
+        false
+    }
+
+    fn insert(&mut self, _resource: Resource) -> Result<(), &'static str> {
+        Err("No operation")
+    }
+
+    fn pushable(&self) -> bool {
+        false
     }
 
     fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {

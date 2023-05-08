@@ -67,6 +67,14 @@ impl<const N: usize> Conveyer<N> {
             Err("No slot to push")
         }
     }
+
+    fn acceptable(&self) -> bool {
+        if let Some(last_slot) = self.slots.last() {
+            last_slot.is_empty()
+        } else {
+            false
+        }
+    }
 }
 
 impl<const N: usize> Item for Conveyer<N> {}
