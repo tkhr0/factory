@@ -74,7 +74,7 @@ impl<const N: usize> Fixture for Inserter<N> {
     }
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
-        if self.having() {
+        if self.having() && self.operatable() {
             // push
             if direction == self.direction() && target.acceptable() {
                 if let Some(resource) = self.pick() {

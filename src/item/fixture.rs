@@ -24,13 +24,12 @@ where
     fn on_click(&mut self);
 
     fn before_update(&mut self, dt: f64) {
-        self.set_cooling_time(self.cooling_time() + dt);
-    }
-
-    fn after_update(&mut self) {
-        if self.operatable() {
-            self.set_cooling_time(0.0);
-        }
+        let next = if self.operatable() {
+            0.0
+        } else {
+            self.cooling_time() + dt
+        };
+        self.set_cooling_time(next);
     }
 
     fn update(&mut self, dt: f64) {
@@ -38,7 +37,6 @@ where
         if self.operatable() {
             self.iterate();
         }
-        self.after_update();
     }
 
     fn operatable(&self) -> bool {

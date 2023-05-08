@@ -76,7 +76,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
-        if direction == self.direction() && target.acceptable() {
+        if self.operatable() && direction == self.direction() && target.acceptable() {
             if let Some(resource) = self.pick() {
                 target.push(Some(resource)).unwrap();
                 println!(
