@@ -7,9 +7,9 @@ pub use conveyer_fixture::*;
 mod conveyer_sign;
 pub use conveyer_sign::*;
 
+use crate::item::{ItemFactory, ItemVariant, ResourceObj};
 use crate::types;
 use crate::Item;
-use crate::Resource;
 use crate::Slot;
 
 #[derive(Debug)]
@@ -30,11 +30,11 @@ impl<const N: usize> Conveyer<N> {
 
     pub fn load(&mut self) {
         if let Some(last_slot) = self.slots.last_mut() {
-            let _ = last_slot.push(Some(Resource::default()));
+            let _ = last_slot.push(Some(ItemFactory::build_resource(ItemVariant::Coal)));
         }
     }
 
-    fn pick(&mut self) -> Option<Resource> {
+    fn pick(&mut self) -> Option<ResourceObj> {
         if let Some(first_slot) = self.slots.first_mut() {
             first_slot.pick()
         } else {
@@ -58,7 +58,7 @@ impl<const N: usize> Conveyer<N> {
         self.direction().angle()
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
         if let Some(last_slot) = self.slots.last_mut() {
             last_slot.push(resource)
         } else {

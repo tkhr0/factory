@@ -3,9 +3,8 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Container;
-use crate::item::Fixture;
+use crate::item::{Fixture, ResourceObj};
 use crate::types;
-use crate::Resource;
 use crate::Slot;
 use crate::Tile;
 
@@ -85,7 +84,7 @@ impl<const N: usize> Fixture for Container<N> {
         self.slots.iter().any(|slot| slot.is_empty())
     }
 
-    fn insert(&mut self, resource: Resource) -> Result<(), &'static str> {
+    fn insert(&mut self, resource: ResourceObj) -> Result<(), &'static str> {
         for slot in self.slots.iter_mut() {
             if slot.is_empty() {
                 return slot.push(Some(resource));
@@ -99,11 +98,11 @@ impl<const N: usize> Fixture for Container<N> {
         false
     }
 
-    fn push(&mut self, _resource: Option<Resource>) -> Result<(), &'static str> {
+    fn push(&mut self, _resource: Option<ResourceObj>) -> Result<(), &'static str> {
         Err("No operation")
     }
 
-    fn request(&mut self) -> Option<Resource> {
+    fn request(&mut self) -> Option<ResourceObj> {
         for slot in self.slots.iter_mut() {
             let resource = slot.pick();
             if resource.is_some() {

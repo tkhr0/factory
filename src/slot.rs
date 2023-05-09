@@ -1,12 +1,12 @@
-use crate::Resource;
+use crate::item::ResourceObj;
 
 #[derive(Debug, Default)]
 pub struct Slot {
-    cargoes: Vec<Resource>,
+    cargoes: Vec<ResourceObj>,
 }
 
 impl Slot {
-    pub fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    pub fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
         if let Some(resource) = resource {
             if self.cargoes.len() >= resource.stack_size() {
                 return Err("Resource overflow from slot");
@@ -17,7 +17,7 @@ impl Slot {
         Ok(())
     }
 
-    pub fn pick(&mut self) -> Option<Resource> {
+    pub fn pick(&mut self) -> Option<ResourceObj> {
         self.cargoes.pop()
     }
 
@@ -28,19 +28,23 @@ impl Slot {
     pub fn is_empty(&self) -> bool {
         self.cargoes.is_empty()
     }
+
+    pub fn resource(&self) -> Option<&ResourceObj> {
+        self.cargoes.first()
+    }
 }
 
 #[cfg(test)]
 mod test {
     #[cfg(test)]
     mod push {
-        use crate::resource::Resource;
+        use crate::item::CoalBuilder;
         use crate::Slot;
 
         #[test]
         fn pushable_some() {
             let mut slot = Slot::default();
-            let resource = Some(Resource::default());
+            let resource = Some(CoalBuilder::new().build_resource());
             assert!(slot.push(resource).is_ok());
             assert!(slot.is_some());
         }
@@ -56,10 +60,15 @@ mod test {
         #[test]
         fn can_not_push_when_slot_is_full() {
             let mut slot = Slot::default();
-            slot.push(Some(Resource::new(1))).unwrap(); // full
+            for _ in 0..64 {
+                slot.push(Some(CoalBuilder::new().build_resource()))
+                    .unwrap(); // full
+            }
 
-            assert!(slot.push(Some(Resource::new(1))).is_err());
-            assert_eq!(slot.cargoes.len(), 1);
+            assert!(slot
+                .push(Some(CoalBuilder::new().build_resource()))
+                .is_err());
+            assert_eq!(slot.cargoes.len(), 64);
         }
     }
 }

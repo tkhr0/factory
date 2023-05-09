@@ -3,9 +3,8 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Conveyer;
-use crate::item::Fixture;
+use crate::item::{Fixture, ResourceObj};
 use crate::types;
-use crate::Resource;
 use crate::Slot;
 use crate::Tile;
 
@@ -31,8 +30,6 @@ impl<const N: usize> Fixture for Conveyer<N> {
     }
 
     fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        const RESOURCE: [f32; 4] = [0.9803, 0.9803, 0.9607, 1.0];
-
         let size = self.size();
 
         graphics::Rectangle::new(Self::COLOR_BODY).draw(
@@ -59,7 +56,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
         for (i, slot) in self.slots.iter().enumerate() {
             if slot.is_some() {
                 graphics::ellipse(
-                    RESOURCE,
+                    slot.resource().unwrap().color(),
                     [-5.0, (-20.0 + (i as f64) * 10.0), 10.0, 10.0],
                     context
                         .transform
@@ -87,7 +84,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
         self.acceptable()
     }
 
-    fn insert(&mut self, resource: Resource) -> Result<(), &'static str> {
+    fn insert(&mut self, resource: ResourceObj) -> Result<(), &'static str> {
         Conveyer::push(self, Some(resource))
     }
 
@@ -95,11 +92,11 @@ impl<const N: usize> Fixture for Conveyer<N> {
         self.acceptable()
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
         Conveyer::push(self, resource)
     }
 
-    fn request(&mut self) -> Option<Resource> {
+    fn request(&mut self) -> Option<ResourceObj> {
         for slot in self.slots.iter_mut() {
             let resource = slot.pick();
             if resource.is_some() {

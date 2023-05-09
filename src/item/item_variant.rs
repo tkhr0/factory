@@ -3,4 +3,7 @@ pub enum ItemVariant {
     Container,
     Conveyer,
     Inserter,
+
+    // resources
+    Coal,
 }

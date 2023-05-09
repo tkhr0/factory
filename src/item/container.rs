@@ -1,6 +1,6 @@
+use crate::item::{ItemFactory, ItemVariant, ResourceObj};
 use crate::types;
 use crate::Item;
-use crate::Resource;
 use crate::Slot;
 
 mod container_builder;
@@ -42,10 +42,10 @@ impl<const N: usize> Container<N> {
     }
 
     fn load(&mut self) {
-        let _ = self.push(Some(Resource::default()));
+        let _ = self.push(Some(ItemFactory::build_resource(ItemVariant::Coal)));
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
         if let Some(last_slot) = self.slots.last_mut() {
             last_slot.push(resource)
         } else {

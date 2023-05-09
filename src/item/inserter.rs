@@ -7,9 +7,9 @@ pub use inserter_fixture::*;
 mod inserter_sign;
 pub use inserter_sign::*;
 
+use crate::item::ResourceObj;
 use crate::types;
 use crate::Item;
-use crate::Resource;
 use crate::Slot;
 
 pub struct Inserter<const N: usize> {
@@ -42,7 +42,7 @@ impl<const N: usize> Inserter<N> {
         self.direction().angle()
     }
 
-    fn pick(&mut self) -> Option<Resource> {
+    fn pick(&mut self) -> Option<ResourceObj> {
         if let Some(first_slot) = self.slots.first_mut() {
             first_slot.pick()
         } else {
@@ -68,7 +68,7 @@ impl<const N: usize> Inserter<N> {
         false
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
         for slot in self.slots.iter_mut() {
             if slot.is_empty() {
                 return slot.push(resource);

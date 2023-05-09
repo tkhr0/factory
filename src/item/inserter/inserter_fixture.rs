@@ -4,8 +4,8 @@ use opengl_graphics::GlGraphics;
 
 use super::Inserter;
 use crate::item::Fixture;
+use crate::item::ResourceObj;
 use crate::types;
-use crate::Resource;
 use crate::Slot;
 use crate::Tile;
 
@@ -95,7 +95,7 @@ impl<const N: usize> Fixture for Inserter<N> {
         false
     }
 
-    fn insert(&mut self, _resource: Resource) -> Result<(), &'static str> {
+    fn insert(&mut self, _resource: ResourceObj) -> Result<(), &'static str> {
         Err("No operation")
     }
 
@@ -103,11 +103,11 @@ impl<const N: usize> Fixture for Inserter<N> {
         false
     }
 
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
         Inserter::push(self, resource)
     }
 
-    fn request(&mut self) -> Option<Resource> {
+    fn request(&mut self) -> Option<ResourceObj> {
         None
     }
 

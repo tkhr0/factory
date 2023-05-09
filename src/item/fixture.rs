@@ -3,8 +3,8 @@ use std::fmt::{Debug, Error, Formatter};
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
+use crate::item::ResourceObj;
 use crate::types;
-use crate::Resource;
 use crate::Slot;
 use crate::Tile;
 
@@ -49,13 +49,13 @@ pub trait Fixture {
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
 
     fn insertable(&self) -> bool;
-    fn insert(&mut self, resource: Resource) -> Result<(), &'static str>;
+    fn insert(&mut self, resource: ResourceObj) -> Result<(), &'static str>;
 
     // for conveyers
     fn pushable(&self) -> bool;
-    fn push(&mut self, resource: Option<Resource>) -> Result<(), &'static str>;
+    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str>;
 
-    fn request(&mut self) -> Option<Resource>;
+    fn request(&mut self) -> Option<ResourceObj>;
 
     // Debug
     fn slots(&self) -> &[Slot];
