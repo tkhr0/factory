@@ -1,5 +1,5 @@
 use crate::item::Material;
 
-pub trait Builder {
+pub trait MaterialBuilder {
     fn build(&self) -> Box<dyn Material>;
 }

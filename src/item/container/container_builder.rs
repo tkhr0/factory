@@ -1,5 +1,5 @@
 use super::Container;
-use crate::item::{Builder, Item};
+use crate::item::{Machine, MachineBuilder, Material, MaterialBuilder};
 use crate::types;
 use crate::Slot;
 
@@ -12,13 +12,27 @@ impl ContainerBuilder {
     pub fn new(name: &'static str) -> Self {
         Self {
             name,
-            direction: Default::default(),
+            direction: types::Direction::North,
         }
+    }
+
+    pub fn set_direction(&mut self, direction: types::Direction) {
+        self.direction = direction;
     }
 }
 
-impl Builder for ContainerBuilder {
-    fn build(&self) -> Box<dyn Item> {
+impl MaterialBuilder for ContainerBuilder {
+    fn build(&self) -> Box<dyn Material> {
+        Box::new(Container::<16> {
+            name: self.name,
+            slots: core::array::from_fn(|_| Slot::default()),
+            direction: self.direction,
+        })
+    }
+}
+
+impl MachineBuilder for ContainerBuilder {
+    fn build(&self) -> Box<dyn Machine> {
         Box::new(Container::<16> {
             name: self.name,
             slots: core::array::from_fn(|_| Slot::default()),

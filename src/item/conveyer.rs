@@ -4,12 +4,17 @@ pub use conveyer_builder::ConveyerBuilder;
 mod conveyer_fixture;
 pub use conveyer_fixture::*;
 
+mod conveyer_resource;
+pub use conveyer_resource::*;
+
 mod conveyer_sign;
 pub use conveyer_sign::*;
 
-use crate::item::{ItemFactory, ItemVariant, ResourceObj};
+mod conveyer_symbol;
+pub use conveyer_symbol::*;
+
+use crate::item::{Machine, Material, MaterialFactory, MaterialVariant};
 use crate::types;
-use crate::Item;
 use crate::Slot;
 
 #[derive(Debug)]
@@ -22,6 +27,7 @@ pub struct Conveyer<const N: usize> {
 }
 
 impl<const N: usize> Conveyer<N> {
+    const STACK_SIZE: usize = 64;
     pub const COLOR_BODY: types::Color = [0.749, 0.741, 0.329, 1.0];
 
     fn direction(&self) -> &types::Direction {
@@ -30,11 +36,11 @@ impl<const N: usize> Conveyer<N> {
 
     pub fn load(&mut self) {
         if let Some(last_slot) = self.slots.last_mut() {
-            let _ = last_slot.push(Some(ItemFactory::build_resource(ItemVariant::Coal)));
+            let _ = last_slot.push(Some(MaterialFactory::build(MaterialVariant::Coal)));
         }
     }
 
-    fn pick(&mut self) -> Option<ResourceObj> {
+    fn pick(&mut self) -> Option<Box<dyn Material>> {
         if let Some(first_slot) = self.slots.first_mut() {
             first_slot.pick()
         } else {
@@ -58,7 +64,7 @@ impl<const N: usize> Conveyer<N> {
         self.direction().angle()
     }
 
-    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<Box<dyn Material>>) -> Result<(), &'static str> {
         if let Some(last_slot) = self.slots.last_mut() {
             last_slot.push(resource)
         } else {
@@ -75,4 +81,5 @@ impl<const N: usize> Conveyer<N> {
     }
 }
 
-impl<const N: usize> Item for Conveyer<N> {}
+impl<const N: usize> Material for Conveyer<N> {}
+impl<const N: usize> Machine for Conveyer<N> {}

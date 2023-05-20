@@ -1,7 +1,7 @@
-use super::Coal;
+use super::Conveyer;
 use crate::item::Resource;
 
-impl Resource for Coal {
+impl<const N: usize> Resource for Conveyer<N> {
     fn stack_size(&self) -> usize {
         Self::STACK_SIZE
     }

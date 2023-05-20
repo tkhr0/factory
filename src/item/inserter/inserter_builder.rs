@@ -1,5 +1,5 @@
 use super::Inserter;
-use crate::item::{Builder, Item};
+use crate::item::{Machine, MachineBuilder, Material, MaterialBuilder};
 use crate::types;
 use crate::Slot;
 
@@ -15,10 +15,25 @@ impl InserterBuilder {
             direction: Default::default(),
         }
     }
+
+    fn set_direction(&mut self, direction: types::Direction) {
+        self.direction = direction;
+    }
 }
 
-impl Builder for InserterBuilder {
-    fn build(&self) -> Box<dyn Item> {
+impl MaterialBuilder for InserterBuilder {
+    fn build(&self) -> Box<dyn Material> {
+        Box::new(Inserter::<1> {
+            name: self.name,
+            slots: core::array::from_fn(|_| Slot::default()),
+            cooling_time: 0.0,
+            direction: self.direction,
+        })
+    }
+}
+
+impl MachineBuilder for InserterBuilder {
+    fn build(&self) -> Box<dyn Machine> {
         Box::new(Inserter::<1> {
             name: self.name,
             slots: core::array::from_fn(|_| Slot::default()),

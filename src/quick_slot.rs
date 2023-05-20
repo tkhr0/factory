@@ -1,12 +1,12 @@
-use crate::item::ItemVariant;
+use crate::item::MaterialVariant;
 
 pub struct QuickSlot {
-    items: [Option<ItemVariant>; 10],
+    items: [Option<MaterialVariant>; 10],
     selected: usize,
 }
 
 impl QuickSlot {
-    pub fn items(&self) -> &[Option<ItemVariant>; 10] {
+    pub fn items(&self) -> &[Option<MaterialVariant>; 10] {
         &self.items
     }
 
@@ -22,11 +22,11 @@ impl QuickSlot {
         self.selected
     }
 
-    pub fn set_item(&mut self, index: usize, item: ItemVariant) {
+    pub fn set_item(&mut self, index: usize, item: MaterialVariant) {
         self.items[index] = Some(item);
     }
 
-    pub fn selected_item(&self) -> Option<ItemVariant> {
+    pub fn selected_item(&self) -> Option<MaterialVariant> {
         self.items[self.selected]
     }
 }

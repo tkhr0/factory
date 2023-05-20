@@ -10,6 +10,7 @@ pub use coal_sign::*;
 mod coal_symbol;
 pub use coal_symbol::*;
 
+use crate::item::Material;
 use crate::types;
 
 pub struct Coal {}
@@ -22,3 +23,5 @@ impl Coal {
         Self {}
     }
 }
+
+impl Material for Coal {}

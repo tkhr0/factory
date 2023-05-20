@@ -5,7 +5,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
-use crate::item::{Builder, ContainerBuilder, ConveyerBuilder, Fixture, Item};
+use crate::item::{Machine, MachineFactory, MaterialVariant};
 use crate::types::{Direction, GridPoint, Point};
 use crate::Tile;
 
@@ -27,58 +27,45 @@ impl Field {
 
     pub fn initialize(&mut self) {
         self.add_fixture(
-            ConveyerBuilder::new("A")
-                .set_direction(Direction::East)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(2, 3),
         );
         self.add_fixture(
-            ConveyerBuilder::new("B")
-                .set_direction(Direction::East)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(3, 3),
         );
         self.add_fixture(
-            ConveyerBuilder::new("C")
-                .set_direction(Direction::South)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(4, 3),
         );
         self.add_fixture(
-            ConveyerBuilder::new("D")
-                .set_direction(Direction::South)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(4, 4),
         );
         self.add_fixture(
-            ConveyerBuilder::new("E")
-                .set_direction(Direction::West)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(4, 5),
         );
         self.add_fixture(
-            ConveyerBuilder::new("F")
-                .set_direction(Direction::West)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(3, 5),
         );
         self.add_fixture(
-            ConveyerBuilder::new("G")
-                .set_direction(Direction::North)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(2, 5),
         );
         self.add_fixture(
-            ConveyerBuilder::new("H")
-                .set_direction(Direction::North)
-                .build(),
+            MachineFactory::build(MaterialVariant::Conveyer),
             GridPoint::new(2, 4),
         );
 
-        self.add_fixture(ContainerBuilder::new("C1").build(), GridPoint::new(6, 3));
+        self.add_fixture(
+            MachineFactory::build(MaterialVariant::Container),
+            GridPoint::new(6, 3),
+        );
     }
 
-    pub fn add_fixture(&mut self, fixture: Box<dyn Fixture>, grid_point: GridPoint) {
+    pub fn add_fixture(&mut self, fixture: Box<dyn Machine>, grid_point: GridPoint) {
         self.tiles[grid_point.as_index(WIDTH)].set_fixture(fixture);
     }
 
@@ -155,7 +142,7 @@ impl Field {
         &mut self,
         args: &ButtonArgs,
         mouse_pos: &Point,
-        holding_item: Option<Box<dyn Item>>,
+        holding_item: Option<Box<dyn Machine>>,
     ) {
         if args.state == ButtonState::Press {
             let x = (mouse_pos.x / Self::TILE_SIZE) as usize;
@@ -365,7 +352,7 @@ impl Iterator for TileIterator {
 mod test_tile_iterator {
     use crate::{
         field::{SIZE, WIDTH},
-        item::{Builder, ConveyerBuilder},
+        item::{MachineFactory, MaterialVariant},
         tile::Tile,
         types::GridPoint,
     };
@@ -383,7 +370,7 @@ mod test_tile_iterator {
             tiles.push(tile);
         }
         let index = GridPoint::new(2, 2).as_index(WIDTH);
-        tiles[index].set_fixture(ConveyerBuilder::new("A").build());
+        tiles[index].set_fixture(MachineFactory::build(MaterialVariant::Conveyer));
 
         let mut iter = TileIterator::new(index, &tiles);
 

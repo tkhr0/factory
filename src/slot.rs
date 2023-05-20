@@ -1,12 +1,12 @@
-use crate::item::ResourceObj;
+use crate::item::Material;
 
 #[derive(Debug, Default)]
 pub struct Slot {
-    cargoes: Vec<ResourceObj>,
+    cargoes: Vec<Box<dyn Material>>,
 }
 
 impl Slot {
-    pub fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
+    pub fn push(&mut self, resource: Option<Box<dyn Material>>) -> Result<(), &'static str> {
         if let Some(resource) = resource {
             if self.cargoes.len() >= resource.stack_size() {
                 return Err("Resource overflow from slot");
@@ -17,7 +17,7 @@ impl Slot {
         Ok(())
     }
 
-    pub fn pick(&mut self) -> Option<ResourceObj> {
+    pub fn pick(&mut self) -> Option<Box<dyn Material>> {
         self.cargoes.pop()
     }
 
@@ -29,7 +29,7 @@ impl Slot {
         self.cargoes.is_empty()
     }
 
-    pub fn resource(&self) -> Option<&ResourceObj> {
+    pub fn resource(&self) -> Option<&Box<dyn Material>> {
         self.cargoes.first()
     }
 }
@@ -38,13 +38,13 @@ impl Slot {
 mod test {
     #[cfg(test)]
     mod push {
-        use crate::item::CoalBuilder;
+        use crate::item::{CoalBuilder, MaterialBuilder};
         use crate::Slot;
 
         #[test]
         fn pushable_some() {
             let mut slot = Slot::default();
-            let resource = Some(CoalBuilder::new().build_resource());
+            let resource = Some(CoalBuilder::new().build());
             assert!(slot.push(resource).is_ok());
             assert!(slot.is_some());
         }
@@ -61,13 +61,10 @@ mod test {
         fn can_not_push_when_slot_is_full() {
             let mut slot = Slot::default();
             for _ in 0..64 {
-                slot.push(Some(CoalBuilder::new().build_resource()))
-                    .unwrap(); // full
+                slot.push(Some(CoalBuilder::new().build())).unwrap(); // full
             }
 
-            assert!(slot
-                .push(Some(CoalBuilder::new().build_resource()))
-                .is_err());
+            assert!(slot.push(Some(CoalBuilder::new().build())).is_err());
             assert_eq!(slot.cargoes.len(), 64);
         }
     }

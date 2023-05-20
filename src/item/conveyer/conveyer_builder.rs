@@ -1,5 +1,5 @@
 use super::Conveyer;
-use crate::item::{Builder, Item};
+use crate::item::{Machine, MachineBuilder, Material, MaterialBuilder};
 use crate::types;
 use crate::Slot;
 
@@ -16,14 +16,24 @@ impl ConveyerBuilder {
         }
     }
 
-    pub fn set_direction(&mut self, direction: types::Direction) -> &mut Self {
+    pub fn set_direction(&mut self, direction: types::Direction) {
         self.direction = direction;
-        self
     }
 }
 
-impl Builder for ConveyerBuilder {
-    fn build(&self) -> Box<dyn Item> {
+impl MaterialBuilder for ConveyerBuilder {
+    fn build(&self) -> Box<dyn Material> {
+        Box::new(Conveyer::<4> {
+            name: self.name,
+            slots: core::array::from_fn(|_| Slot::default()),
+            cooling_time: 0.0,
+            direction: self.direction,
+        })
+    }
+}
+
+impl MachineBuilder for ConveyerBuilder {
+    fn build(&self) -> Box<dyn Machine> {
         Box::new(Conveyer::<4> {
             name: self.name,
             slots: core::array::from_fn(|_| Slot::default()),

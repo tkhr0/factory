@@ -4,12 +4,17 @@ pub use inserter_builder::InserterBuilder;
 mod inserter_fixture;
 pub use inserter_fixture::*;
 
+mod inserter_resource;
+pub use inserter_resource::*;
+
 mod inserter_sign;
 pub use inserter_sign::*;
 
-use crate::item::ResourceObj;
+mod inserter_symbol;
+pub use inserter_symbol::*;
+
+use crate::item::{Machine, Material};
 use crate::types;
-use crate::Item;
 use crate::Slot;
 
 pub struct Inserter<const N: usize> {
@@ -20,6 +25,7 @@ pub struct Inserter<const N: usize> {
 }
 
 impl<const N: usize> Inserter<N> {
+    const STACK_SIZE: usize = 64;
     const COLOR_BODY: types::Color = [0.929412, 0.752941, 0.270588, 1.000000];
 
     fn width(&self) -> f64 {
@@ -42,7 +48,7 @@ impl<const N: usize> Inserter<N> {
         self.direction().angle()
     }
 
-    fn pick(&mut self) -> Option<ResourceObj> {
+    fn pick(&mut self) -> Option<Box<dyn Material>> {
         if let Some(first_slot) = self.slots.first_mut() {
             first_slot.pick()
         } else {
@@ -68,7 +74,7 @@ impl<const N: usize> Inserter<N> {
         false
     }
 
-    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<Box<dyn Material>>) -> Result<(), &'static str> {
         for slot in self.slots.iter_mut() {
             if slot.is_empty() {
                 return slot.push(resource);
@@ -79,4 +85,5 @@ impl<const N: usize> Inserter<N> {
     }
 }
 
-impl<const N: usize> Item for Inserter<N> {}
+impl<const N: usize> Material for Inserter<N> {}
+impl<const N: usize> Machine for Inserter<N> {}

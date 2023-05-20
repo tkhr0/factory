@@ -3,7 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Conveyer;
-use crate::item::{Fixture, ResourceObj};
+use crate::item::{Fixture, Material};
 use crate::types;
 use crate::Slot;
 use crate::Tile;
@@ -56,7 +56,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
         for (i, slot) in self.slots.iter().enumerate() {
             if slot.is_some() {
                 graphics::ellipse(
-                    slot.resource().unwrap().color(),
+                    slot.resource().unwrap().color_symbol(),
                     [-5.0, (-20.0 + (i as f64) * 10.0), 10.0, 10.0],
                     context
                         .transform
@@ -84,7 +84,7 @@ impl<const N: usize> Fixture for Conveyer<N> {
         self.acceptable()
     }
 
-    fn insert(&mut self, resource: ResourceObj) -> Result<(), &'static str> {
+    fn insert(&mut self, resource: Box<dyn Material>) -> Result<(), &'static str> {
         Conveyer::push(self, Some(resource))
     }
 
@@ -92,11 +92,11 @@ impl<const N: usize> Fixture for Conveyer<N> {
         self.acceptable()
     }
 
-    fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
+    fn push(&mut self, resource: Option<Box<dyn Material>>) -> Result<(), &'static str> {
         Conveyer::push(self, resource)
     }
 
-    fn request(&mut self) -> Option<ResourceObj> {
+    fn request(&mut self) -> Option<Box<dyn Material>> {
         for slot in self.slots.iter_mut() {
             let resource = slot.pick();
             if resource.is_some() {

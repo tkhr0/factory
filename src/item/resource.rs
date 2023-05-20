@@ -1,9 +1,6 @@
 use std::fmt;
 
-use crate::types;
-
 pub trait Resource {
-    fn color(&self) -> types::Color;
     fn stack_size(&self) -> usize;
 }
 

@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy)]
-pub enum ItemVariant {
+pub enum MaterialVariant {
     Container,
     Conveyer,
     Inserter,

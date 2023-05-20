@@ -1,4 +1,4 @@
-use crate::item::{Fixture, ResourceObj};
+use crate::item::{Fixture, Material};
 use crate::types;
 
 #[derive(Debug, Default)]
@@ -57,7 +57,7 @@ impl Tile {
         }
     }
 
-    pub fn insert(&mut self, resource: ResourceObj) -> Result<(), &'static str> {
+    pub fn insert(&mut self, resource: Box<dyn Material>) -> Result<(), &'static str> {
         if let Some(fixture) = self.fixture_mut() {
             fixture.insert(resource)
         } else {
@@ -73,7 +73,7 @@ impl Tile {
         }
     }
 
-    pub fn push(&mut self, resource: Option<ResourceObj>) -> Result<(), &'static str> {
+    pub fn push(&mut self, resource: Option<Box<dyn Material>>) -> Result<(), &'static str> {
         if let Some(fixture) = self.fixture_mut() {
             fixture.push(resource)
         } else {
@@ -81,7 +81,7 @@ impl Tile {
         }
     }
 
-    pub fn request(&mut self) -> Option<ResourceObj> {
+    pub fn request(&mut self) -> Option<Box<dyn Material>> {
         if let Some(fixture) = self.fixture_mut() {
             fixture.request()
         } else {

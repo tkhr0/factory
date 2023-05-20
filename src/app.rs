@@ -2,7 +2,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, RenderArgs, UpdateArgs};
 use piston::ResizeArgs;
 
-use crate::item::ItemFactory;
+use crate::item::MachineFactory;
 use crate::types;
 use crate::EventHandleState;
 use crate::Field;
@@ -57,7 +57,7 @@ impl App {
             self.field.on_click(
                 args,
                 mouse_pos,
-                quick_slot.selected_item().map(ItemFactory::build),
+                quick_slot.selected_item().map(MachineFactory::build),
             );
         }
     }

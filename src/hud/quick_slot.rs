@@ -2,7 +2,7 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use crate::item::{ItemFactory, Sign};
+use crate::item::{MaterialFactory, Sign};
 use crate::types;
 use crate::QuickSlot as QuickSlotState;
 
@@ -58,7 +58,7 @@ impl QuickSlot {
 
             if let Some(item) = item {
                 Sign::render(
-                    ItemFactory::build(*item).as_ref(),
+                    MaterialFactory::build(*item).as_ref(),
                     &context,
                     gl,
                     types::Size::new(Self::SLOT_WIDTH, Self::SLOT_HEIGHT),

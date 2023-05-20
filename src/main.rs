@@ -19,7 +19,6 @@ mod event_handle_state;
 mod field;
 mod hud;
 mod item;
-mod item_builders;
 mod player_state;
 mod quick_slot;
 mod slot;
@@ -30,7 +29,6 @@ use app::App;
 use event_handle_state::EventHandleState;
 use field::Field;
 use hud::Hud;
-use item::Item;
 use player_state::PlayerState;
 use quick_slot::QuickSlot;
 use slot::Slot;
@@ -52,9 +50,9 @@ fn main() {
 
     let mut player_state: PlayerState = Default::default();
     let quick_slot = player_state.quick_slot_mut();
-    quick_slot.set_item(0, item::ItemVariant::Inserter);
-    quick_slot.set_item(1, item::ItemVariant::Conveyer);
-    quick_slot.set_item(2, item::ItemVariant::Container);
+    quick_slot.set_item(0, item::MaterialVariant::Inserter);
+    quick_slot.set_item(1, item::MaterialVariant::Conveyer);
+    quick_slot.set_item(2, item::MaterialVariant::Container);
 
     let mut app = App::new(
         WINDOW_SIZE,
