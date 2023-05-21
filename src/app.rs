@@ -1,6 +1,6 @@
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState, RenderArgs, UpdateArgs};
-use piston::{Button, Key, MouseButton, ResizeArgs};
+use piston::{Button, Key, ResizeArgs};
 
 use crate::types;
 use crate::EventHandleState;

@@ -9,18 +9,27 @@ use crate::types;
 use crate::EventHandleState;
 use crate::PlayerState;
 
+mod inventory;
+use inventory::Inventory;
+
 mod quick_slot;
 use quick_slot::QuickSlot;
 
 pub struct Hud {
     size: types::Size,
+    inventory: Inventory,
     quick_slot: QuickSlot,
 }
 
 impl Hud {
     pub fn new(size: types::Size, quick_slot_len: usize) -> Self {
+        let inventory = Inventory::new(size);
         let quick_slot = QuickSlot::new(size, quick_slot_len);
-        Self { size, quick_slot }
+        Self {
+            size,
+            inventory,
+            quick_slot,
+        }
     }
 
     pub fn render(
@@ -36,7 +45,7 @@ impl Hud {
             .render(context, gl, player_state.quick_slot(), holding_item);
 
         if player_state.shown_inventory() {
-            player_state.inventory().render(gl, context);
+            self.inventory.render(player_state.inventory(), gl, context);
         }
 
         // machine preview
@@ -73,6 +82,7 @@ impl Hud {
 
     pub fn resize(&mut self, args: &ResizeArgs) {
         self.size = types::Size::new(args.window_size[0], args.window_size[1]);
+        self.inventory.resize(self.size);
         self.quick_slot.resize(self.size);
     }
 }
