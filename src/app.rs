@@ -1,6 +1,6 @@
 use opengl_graphics::GlGraphics;
-use piston::input::{ButtonArgs, RenderArgs, UpdateArgs};
-use piston::ResizeArgs;
+use piston::input::{ButtonArgs, ButtonState, RenderArgs, UpdateArgs};
+use piston::{Button, Key, ResizeArgs};
 
 use crate::types;
 use crate::EventHandleState;
@@ -53,15 +53,32 @@ impl App {
         mouse_pos: &types::Point,
         player_state: &mut PlayerState,
     ) {
-        let mut state: EventHandleState = Default::default();
-        state = self.hud.click(args, mouse_pos, state, player_state.quick_slot_mut());
+        if args.state == ButtonState::Press {
+            match args.button {
+                Button::Keyboard(Key::E) => {
+                    player_state.toggle_inventory();
+                }
+                _ => {}
+            }
+        }
 
-        if !state.consumed() {
-            self.field.on_click(
-                args,
-                mouse_pos,
-                player_state.quick_slot().selected_item().map(|v| v.as_machine().unwrap()),
-            );
+        // Click
+        {
+            let mut state: EventHandleState = Default::default();
+            state = self
+                .hud
+                .click(args, mouse_pos, state, player_state.quick_slot_mut());
+
+            if !state.consumed() {
+                self.field.on_click(
+                    args,
+                    mouse_pos,
+                    player_state
+                        .quick_slot()
+                        .selected_item()
+                        .map(|v| v.as_machine().unwrap()),
+                );
+            }
         }
     }
 
