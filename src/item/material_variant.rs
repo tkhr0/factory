@@ -1,6 +1,6 @@
 use crate::item::{Machine, MachineFactory, Material, MaterialFactory};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MaterialVariant {
     Container,
     Conveyer,

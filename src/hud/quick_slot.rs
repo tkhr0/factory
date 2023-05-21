@@ -2,7 +2,7 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
-use crate::item::{MaterialFactory, Sign};
+use crate::item::{MaterialFactory, MaterialVariant, Sign};
 use crate::types;
 use crate::QuickSlot as QuickSlotState;
 
@@ -25,7 +25,13 @@ impl QuickSlot {
         Self { hud_size, slot_len }
     }
 
-    pub fn render(&self, context: &Context, gl: &mut GlGraphics, quick_slot: &QuickSlotState) {
+    pub fn render(
+        &self,
+        context: &Context,
+        gl: &mut GlGraphics,
+        quick_slot: &QuickSlotState,
+        holding_item: &Option<MaterialVariant>,
+    ) {
         // QuickSlot frame
         let size = self.size();
         let origin = self.origin();
@@ -40,7 +46,6 @@ impl QuickSlot {
             );
 
         // QuickSlot slots
-        let selected = quick_slot.selected();
         for (i, item) in quick_slot.items().iter().enumerate() {
             let mut context = *context;
             context.transform = transform_quick_slot.trans(
@@ -63,15 +68,17 @@ impl QuickSlot {
                     gl,
                     types::Size::new(Self::SLOT_WIDTH, Self::SLOT_HEIGHT),
                 );
-            }
 
-            if i == selected {
-                graphics::Rectangle::new_border(Self::COLOR_UI_SELECTED, 1.0).draw(
-                    [0.0, 0.0, Self::SLOT_WIDTH, Self::SLOT_HEIGHT],
-                    &context.draw_state,
-                    context.transform,
-                    gl,
-                );
+                if let Some(holding_item) = holding_item {
+                    if item == holding_item {
+                        graphics::Rectangle::new_border(Self::COLOR_UI_SELECTED, 1.0).draw(
+                            [0.0, 0.0, Self::SLOT_WIDTH, Self::SLOT_HEIGHT],
+                            &context.draw_state,
+                            context.transform,
+                            gl,
+                        );
+                    }
+                }
             }
         }
     }

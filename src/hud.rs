@@ -8,7 +8,6 @@ use crate::item::Fixture;
 use crate::types;
 use crate::EventHandleState;
 use crate::PlayerState;
-use crate::QuickSlot as QuickSlotState;
 
 mod quick_slot;
 use quick_slot::QuickSlot;
@@ -31,15 +30,17 @@ impl Hud {
         player_state: &PlayerState,
         mouse_pos: &types::Point,
     ) {
+        let holding_item = player_state.holding_item();
+
         self.quick_slot
-            .render(context, gl, player_state.quick_slot());
+            .render(context, gl, player_state.quick_slot(), holding_item);
 
         if player_state.shown_inventory() {
             player_state.inventory().render(gl, context);
         }
 
         // machine preview
-        if let Some(variant) = player_state.quick_slot().selected_item() {
+        if let Some(variant) = holding_item {
             if let Some(machine) = variant.as_machine() {
                 let mut context = *context;
                 context.transform = context.transform.trans(mouse_pos.x, mouse_pos.y);
@@ -56,11 +57,13 @@ impl Hud {
         args: &ButtonArgs,
         mouse_pos: &types::Point,
         mut event_handle_state: EventHandleState,
-        quick_slot_state: &mut QuickSlotState,
+        player_state: &mut PlayerState,
     ) -> EventHandleState {
         if args.state == ButtonState::Press {
             if let Some(index) = self.quick_slot.clicked(mouse_pos) {
-                quick_slot_state.select(index);
+                if let Some(item) = player_state.quick_slot()[index] {
+                    player_state.hold_item(item)
+                }
                 event_handle_state.consume();
             }
         }

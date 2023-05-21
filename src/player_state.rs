@@ -1,3 +1,4 @@
+use crate::item::MaterialVariant;
 use crate::Inventory;
 use crate::QuickSlot;
 
@@ -7,6 +8,8 @@ pub struct PlayerState {
     shown_inventory: bool,
 
     quick_slot: QuickSlot,
+
+    holding_item: Option<MaterialVariant>,
 }
 
 impl PlayerState {
@@ -28,5 +31,13 @@ impl PlayerState {
 
     pub fn shown_inventory(&self) -> bool {
         self.shown_inventory
+    }
+
+    pub fn hold_item(&mut self, item: MaterialVariant) {
+        self.holding_item = Some(item);
+    }
+
+    pub fn holding_item(&self) -> &Option<MaterialVariant> {
+        &self.holding_item
     }
 }

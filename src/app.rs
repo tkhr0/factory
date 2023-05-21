@@ -65,18 +65,13 @@ impl App {
         // Click
         {
             let mut state: EventHandleState = Default::default();
-            state = self
-                .hud
-                .click(args, mouse_pos, state, player_state.quick_slot_mut());
+            state = self.hud.click(args, mouse_pos, state, player_state);
 
             if !state.consumed() {
                 self.field.on_click(
                     args,
                     mouse_pos,
-                    player_state
-                        .quick_slot()
-                        .selected_item()
-                        .map(|v| v.as_machine().unwrap()),
+                    player_state.holding_item().map(|v| v.as_machine().unwrap()),
                 );
             }
         }
