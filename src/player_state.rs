@@ -40,4 +40,8 @@ impl PlayerState {
     pub fn holding_item(&self) -> &Option<MaterialVariant> {
         &self.holding_item
     }
+
+    pub fn release_item(&mut self) {
+        self.holding_item = None;
+    }
 }
