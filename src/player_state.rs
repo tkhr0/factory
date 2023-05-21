@@ -1,8 +1,11 @@
+use crate::Inventory;
 use crate::QuickSlot;
 
 #[derive(Default)]
 pub struct PlayerState {
+    inventory: Inventory,
     shown_inventory: bool,
+
     quick_slot: QuickSlot,
 }
 
@@ -13,6 +16,10 @@ impl PlayerState {
 
     pub fn quick_slot_mut(&mut self) -> &mut QuickSlot {
         &mut self.quick_slot
+    }
+
+    pub fn inventory(&self) -> &Inventory {
+        &self.inventory
     }
 
     pub fn toggle_inventory(&mut self) {

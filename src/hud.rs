@@ -35,7 +35,7 @@ impl Hud {
             .render(context, gl, player_state.quick_slot());
 
         if player_state.shown_inventory() {
-            println!("shown inventory");
+            player_state.inventory().render(gl, context);
         }
 
         // machine preview
