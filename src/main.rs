@@ -69,10 +69,6 @@ fn main() {
             app.resize(&args);
         }
 
-        if let Some(args) = e.render_args() {
-            app.render(&args, &player_state);
-        }
-
         if let Some(mouse_args) = e.mouse_cursor_args() {
             mouse_pos = Point::new(mouse_args[0], mouse_args[1]);
         }
@@ -83,6 +79,10 @@ fn main() {
 
         if let Some(args) = e.update_args() {
             app.update(&args);
+        }
+
+        if let Some(args) = e.render_args() {
+            app.render(&args, &player_state);
         }
     }
 }
