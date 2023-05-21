@@ -29,14 +29,19 @@ impl App {
         self.field.initialize();
     }
 
-    pub fn render(&mut self, args: &RenderArgs, player_state: &PlayerState) {
+    pub fn render(
+        &mut self,
+        args: &RenderArgs,
+        player_state: &PlayerState,
+        mouse_pos: &types::Point,
+    ) {
         const BACKGROUND: [f32; 4] = [252.0, 249.0, 230.0, 1.0];
 
         self.gl.draw(args.viewport(), |c, gl| {
             // Clear the screen.
             graphics::clear(BACKGROUND, gl);
             self.field.render(gl, &c);
-            self.hud.render(&c, gl, player_state);
+            self.hud.render(&c, gl, player_state, mouse_pos);
         });
     }
 
@@ -57,7 +62,7 @@ impl App {
             self.field.on_click(
                 args,
                 mouse_pos,
-                quick_slot.selected_item().map(MachineFactory::build),
+                quick_slot.selected_item().map(|v| v.as_machine().unwrap()),
             );
         }
     }

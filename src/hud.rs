@@ -1,8 +1,10 @@
 use graphics::context::Context;
+use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 use piston::ResizeArgs;
 
+use crate::item::Fixture;
 use crate::types;
 use crate::EventHandleState;
 use crate::PlayerState;
@@ -22,9 +24,31 @@ impl Hud {
         Self { size, quick_slot }
     }
 
-    pub fn render(&self, context: &Context, gl: &mut GlGraphics, player_state: &PlayerState) {
+    pub fn render(
+        &self,
+        context: &Context,
+        gl: &mut GlGraphics,
+        player_state: &PlayerState,
+        mouse_pos: &types::Point,
+    ) {
         self.quick_slot
             .render(context, gl, player_state.quick_slot());
+
+        if player_state.shown_inventory() {
+            println!("shown inventory");
+        }
+
+        // machine preview
+        if let Some(variant) = player_state.quick_slot().selected_item() {
+            if let Some(machine) = variant.as_machine() {
+                let mut context = *context;
+                context.transform = context.transform.trans(mouse_pos.x, mouse_pos.y);
+
+                let machine: Box<dyn Fixture> = machine;
+
+                machine.render(gl, &context);
+            }
+        }
     }
 
     pub fn click(

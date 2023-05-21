@@ -27,40 +27,40 @@ impl Field {
 
     pub fn initialize(&mut self) {
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(2, 3),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(3, 3),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(4, 3),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(4, 4),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(4, 5),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(3, 5),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(2, 5),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer),
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(2, 4),
         );
 
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Container),
+            MachineFactory::build(MaterialVariant::Container).unwrap(),
             GridPoint::new(6, 3),
         );
     }

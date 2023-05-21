@@ -82,7 +82,7 @@ fn main() {
         }
 
         if let Some(args) = e.render_args() {
-            app.render(&args, &player_state);
+            app.render(&args, &player_state, &mouse_pos);
         }
     }
 }
