@@ -2,13 +2,11 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, RenderArgs, UpdateArgs};
 use piston::ResizeArgs;
 
-use crate::item::MachineFactory;
 use crate::types;
 use crate::EventHandleState;
 use crate::Field;
 use crate::Hud;
 use crate::PlayerState;
-use crate::QuickSlot;
 
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend.
@@ -53,16 +51,16 @@ impl App {
         &mut self,
         args: &ButtonArgs,
         mouse_pos: &types::Point,
-        quick_slot: &mut QuickSlot,
+        player_state: &mut PlayerState,
     ) {
         let mut state: EventHandleState = Default::default();
-        state = self.hud.click(args, mouse_pos, state, quick_slot);
+        state = self.hud.click(args, mouse_pos, state, player_state.quick_slot_mut());
 
         if !state.consumed() {
             self.field.on_click(
                 args,
                 mouse_pos,
-                quick_slot.selected_item().map(|v| v.as_machine().unwrap()),
+                player_state.quick_slot().selected_item().map(|v| v.as_machine().unwrap()),
             );
         }
     }

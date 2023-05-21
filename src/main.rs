@@ -74,7 +74,7 @@ fn main() {
         }
 
         if let Some(args) = e.button_args() {
-            app.button(&args, &mouse_pos, player_state.quick_slot_mut());
+            app.button(&args, &mouse_pos, &mut player_state);
         }
 
         if let Some(args) = e.update_args() {
