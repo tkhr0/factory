@@ -6,7 +6,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::item::{Machine, MachineFactory, MaterialVariant};
-use crate::types::{Direction, GridPoint, Point};
+use crate::types::{Direction, GridPoint, Point, Size};
 use crate::Tile;
 
 const WIDTH: usize = 16;
@@ -70,6 +70,8 @@ impl Field {
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
+        let tile_size = Size::new(Self::TILE_SIZE, Self::TILE_SIZE);
+
         for tile in self.tiles.iter() {
             graphics::Rectangle::new_border([0.0, 0.0, 0.0, 0.1], 1.0).draw(
                 [
@@ -82,6 +84,16 @@ impl Field {
                 context.transform,
                 gl,
             );
+
+            if let Some(natural_resource) = tile.natural_resource() {
+                let mut context: Context = *context;
+                context.transform = context.transform.trans(
+                    tile.x as f64 * Self::TILE_SIZE,
+                    tile.y as f64 * Self::TILE_SIZE,
+                );
+                natural_resource.render(gl, &context, &tile_size);
+            }
+
             if let Some(fixture) = tile.fixture() {
                 let mut context: Context = *context;
                 context.transform = context.transform.trans(

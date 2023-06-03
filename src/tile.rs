@@ -1,14 +1,32 @@
 use crate::item::{Fixture, Material};
 use crate::types;
+use crate::NaturalResource;
 
 #[derive(Debug, Default)]
 pub struct Tile {
     pub x: usize,
     pub y: usize,
     fixture: Option<Box<dyn Fixture>>,
+    natural_resource: Option<Box<dyn NaturalResource>>,
 }
 
 impl Tile {
+    // natural_resource
+
+    pub fn natural_resource(&self) -> Option<&dyn NaturalResource> {
+        if let Some(natural_resource) = self.natural_resource.as_ref() {
+            Some(natural_resource.as_ref())
+        } else {
+            None
+        }
+    }
+
+    pub fn set_natural_resource(&mut self, natural_resource: Box<dyn NaturalResource>) {
+        self.natural_resource = Some(natural_resource);
+    }
+
+    // fixture
+
     pub fn set_fixture(&mut self, fixture: Box<dyn Fixture>) {
         self.fixture = Some(fixture);
     }
