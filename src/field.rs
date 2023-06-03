@@ -6,6 +6,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::item::{Machine, MachineFactory, MaterialVariant};
+use crate::natural_resource::IronOre;
 use crate::types::{Direction, GridPoint, Point, Size};
 use crate::Tile;
 
@@ -26,6 +27,8 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
+        self.tiles[0].set_natural_resource(Box::new(IronOre::new()));
+
         self.add_fixture(
             MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(2, 3),

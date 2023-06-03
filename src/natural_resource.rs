@@ -1,3 +1,6 @@
+pub mod iron_ore;
+pub use iron_ore::IronOre;
+
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
