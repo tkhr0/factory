@@ -13,8 +13,10 @@ pub use mining_drill_sign::*;
 mod mining_drill_symbol;
 pub use mining_drill_symbol::*;
 
-use crate::item::{Machine, Material, MaterialFactory, MaterialVariant};
+use crate::item::{Machine, Material};
 use crate::types;
+use crate::NaturalResource;
+use crate::NaturalResourceVariant;
 use crate::Slot;
 
 #[derive(Debug)]
@@ -28,6 +30,22 @@ pub struct MiningDrill<const N: usize> {
 
 impl<const N: usize> MiningDrill<N> {
     const COLOR_BODY: types::Color = [0.0, 0.0, 0.0, 1.0];
+    const MINABLE_NATURAL_RESOURCES: [NaturalResourceVariant; 1] =
+        [NaturalResourceVariant::IronOre];
+
+    fn minable(&self, target: &dyn NaturalResource) -> bool {
+        if !self.slots.iter().any(|slot| slot.is_empty()) {
+            return false;
+        }
+
+        for variant in Self::MINABLE_NATURAL_RESOURCES.iter() {
+            if target.variant() == *variant {
+                return true;
+            }
+        }
+
+        false
+    }
 
     fn direction(&self) -> &types::Direction {
         &self.direction

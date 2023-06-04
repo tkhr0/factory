@@ -75,8 +75,17 @@ impl<const N: usize> Fixture for MiningDrill<N> {
         // TODO
     }
 
-    fn affect(&mut self, _target: &mut Tile, _direction: &types::Direction) {
-        // TODO
+    fn affect(&mut self, target: &mut Tile, direction: &types::Direction) {
+        if !self.operatable() {
+            return;
+        }
+        if *direction == types::Direction::Origin {
+            if let Some(natural_resource) = target.natural_resource() {
+                if self.minable(natural_resource) {
+                    let _ = target.mine(N);
+                }
+            }
+        }
     }
 
     fn insertable(&self) -> bool {

@@ -384,7 +384,7 @@ mod test_tile_iterator {
             tiles.push(tile);
         }
         let index = GridPoint::new(2, 2).as_index(WIDTH);
-        tiles[index].set_fixture(MachineFactory::build(MaterialVariant::Conveyer));
+        tiles[index].set_fixture(MachineFactory::build(MaterialVariant::Conveyer).unwrap());
 
         let mut iter = TileIterator::new(index, &tiles);
 
@@ -392,6 +392,7 @@ mod test_tile_iterator {
         assert_eq!(iter.next(), Some(GridPoint::new(2, 1).as_index(WIDTH)));
         assert_eq!(iter.next(), Some(GridPoint::new(3, 1).as_index(WIDTH)));
         assert_eq!(iter.next(), Some(GridPoint::new(1, 2).as_index(WIDTH)));
+        assert_eq!(iter.next(), Some(GridPoint::new(2, 2).as_index(WIDTH)));
         assert_eq!(iter.next(), Some(GridPoint::new(3, 2).as_index(WIDTH)));
         assert_eq!(iter.next(), Some(GridPoint::new(1, 3).as_index(WIDTH)));
         assert_eq!(iter.next(), Some(GridPoint::new(2, 3).as_index(WIDTH)));

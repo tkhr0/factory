@@ -5,9 +5,31 @@ use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
 use crate::types;
+use crate::NaturalResourceVariant;
 
 pub trait NaturalResource {
     fn color(&self) -> [f32; 4];
+
+    fn variant(&self) -> NaturalResourceVariant;
+
+    fn reserves(&self) -> usize;
+    fn set_reserves(&mut self, amount: usize);
+
+    // Ok 採取できた資源の量
+    fn extract(&mut self, amount: usize) -> Result<usize, &'static str> {
+        let reserves = self.reserves();
+
+        return if reserves >= amount {
+            self.set_reserves(reserves - amount);
+            Ok(amount)
+        } else if reserves > 0 {
+            let remaining = reserves;
+            self.set_reserves(0);
+            Ok(remaining)
+        } else {
+            Err("nothing")
+        };
+    }
 
     fn render(&self, gl: &mut GlGraphics, context: &Context, size: &types::Size) {
         graphics::Rectangle::new(self.color()).draw(

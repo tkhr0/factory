@@ -1,6 +1,7 @@
 use crate::item::{Fixture, Material};
 use crate::types;
 use crate::NaturalResource;
+use crate::NaturalResourceVariant;
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -21,8 +22,24 @@ impl Tile {
         }
     }
 
+    pub fn natural_resource_mut(&mut self) -> Option<&mut dyn NaturalResource> {
+        if let Some(natural_resource) = self.natural_resource.as_mut() {
+            Some(natural_resource.as_mut())
+        } else {
+            None
+        }
+    }
+
     pub fn set_natural_resource(&mut self, natural_resource: Box<dyn NaturalResource>) {
         self.natural_resource = Some(natural_resource);
+    }
+
+    pub fn mine(&mut self, amount: usize) -> Result<usize, &'static str> {
+        return if let Some(natural_resource) = self.natural_resource_mut() {
+            natural_resource.extract(amount)
+        } else {
+            Err("Natural resources are nothing")
+        };
     }
 
     // fixture
