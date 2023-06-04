@@ -30,6 +30,11 @@ impl Field {
         self.tiles[0].set_natural_resource(Box::new(IronOre::new()));
 
         self.add_fixture(
+            MachineFactory::build(MaterialVariant::MiningDrill).unwrap(),
+            GridPoint::new(0, 0),
+        );
+
+        self.add_fixture(
             MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
             GridPoint::new(2, 3),
         );

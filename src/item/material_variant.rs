@@ -5,6 +5,7 @@ pub enum MaterialVariant {
     Container,
     Conveyer,
     Inserter,
+    MiningDrill,
 
     // resources
     Coal,

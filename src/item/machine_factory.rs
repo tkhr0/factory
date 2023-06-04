@@ -1,4 +1,4 @@
-use crate::item::{ContainerBuilder, ConveyerBuilder, InserterBuilder};
+use crate::item::{ContainerBuilder, ConveyerBuilder, InserterBuilder, MiningDrillBuilder};
 use crate::item::{Machine, MachineBuilder, MaterialVariant};
 
 pub struct MachineFactory {}
@@ -9,6 +9,7 @@ impl MachineFactory {
             MaterialVariant::Container => Box::new(ContainerBuilder::new("Container")),
             MaterialVariant::Conveyer => Box::new(ConveyerBuilder::new("Conveyer")),
             MaterialVariant::Inserter => Box::new(InserterBuilder::new("Inserter")),
+            MaterialVariant::MiningDrill => Box::new(MiningDrillBuilder::new("MiningDrill")),
             _ => return None,
         };
 

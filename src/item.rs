@@ -27,6 +27,9 @@ pub use conveyer::*;
 mod inserter;
 pub use inserter::*;
 
+mod mining_drill;
+pub use mining_drill::*;
+
 mod coal;
 pub use coal::*;
 
