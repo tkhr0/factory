@@ -4,9 +4,9 @@ pub type Radian = f64;
 #[rustfmt::skip]
 pub enum Direction {
        #[default]
-       North,
-    West, East,
-       South,
+          North,
+    West, Origin, East,
+          South,
 
     None,
 }
@@ -18,6 +18,7 @@ impl Direction {
             Self::West => std::f64::consts::FRAC_PI_2 * 3.0,
             Self::East => std::f64::consts::FRAC_PI_2,
             Self::South => std::f64::consts::PI,
+            Self::Origin => 0.0,
             Self::None => 0.0,
         }
     }
@@ -28,6 +29,7 @@ impl Direction {
             Self::East => Self::South,
             Self::South => Self::West,
             Self::West => Self::North,
+            Self::Origin => Self::None,
             Self::None => Self::None,
         }
     }
@@ -38,6 +40,7 @@ impl Direction {
             Self::East => Self::West,
             Self::South => Self::North,
             Self::West => Self::East,
+            Self::Origin => Self::None,
             Self::None => Self::None,
         }
     }

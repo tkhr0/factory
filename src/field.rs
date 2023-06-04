@@ -122,7 +122,7 @@ impl Field {
 
         if base_x == other_x {
             if base_y == other_y {
-                Direction::None
+                Direction::Origin
             } else if base_y - 1 == other_y {
                 Direction::North
             } else if base_y + 1 == other_y {
@@ -309,7 +309,6 @@ enum TileIteratorState {
 
 #[derive(Debug)]
 struct TileIterator {
-    target_index: usize,
     range: TileIteratorState,
 }
 
@@ -326,7 +325,6 @@ impl TileIterator {
 
         if diff.is_none() {
             return Self {
-                target_index,
                 range: TileIteratorState::None,
             };
         }
@@ -342,7 +340,6 @@ impl TileIterator {
         let end = GridPoint::new(x + diff_width, y + diff_height);
 
         Self {
-            target_index,
             range: TileIteratorState::Range(TileRange::new(start, end)),
         }
     }
@@ -357,9 +354,6 @@ impl Iterator for TileIterator {
             TileIteratorState::Range(range) => {
                 for point in range {
                     let index = point.as_index(WIDTH);
-                    if index == self.target_index {
-                        continue;
-                    }
                     return Some(index);
                 }
                 None
