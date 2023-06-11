@@ -5,9 +5,10 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
+use crate::coordinate::{GridPoint, Point, Size};
 use crate::item::{Machine, MachineFactory, MaterialVariant};
 use crate::natural_resource::{Coal, IronOre, NaturalResource};
-use crate::types::{Direction, GridPoint, Point, Size};
+use crate::types::Direction;
 use crate::Tile;
 use crate::TileState;
 
@@ -270,7 +271,7 @@ impl Iterator for &mut TileRange {
 #[cfg(test)]
 mod test {
     use self::super::TileRange;
-    use crate::types::GridPoint;
+    use crate::coordinate::GridPoint;
 
     #[test]
     fn test_tile_range() {
@@ -376,10 +377,10 @@ impl Iterator for TileIterator {
 #[cfg(test)]
 mod test_tile_iterator {
     use crate::{
+        coordinate::GridPoint,
         field::{SIZE, WIDTH},
         item::{MachineFactory, MaterialVariant},
         tile::Tile,
-        types::GridPoint,
     };
 
     #[test]

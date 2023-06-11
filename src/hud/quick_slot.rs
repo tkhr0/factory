@@ -2,12 +2,13 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
+use crate::coordinate;
 use crate::item::{MaterialFactory, MaterialVariant, Sign};
 use crate::types;
 use crate::QuickSlot as QuickSlotState;
 
 pub struct QuickSlot {
-    hud_size: types::Size,
+    hud_size: coordinate::Size,
     slot_len: usize,
 }
 
@@ -21,7 +22,7 @@ impl QuickSlot {
 
     const PADDING: f64 = 10.0;
 
-    pub fn new(hud_size: types::Size, slot_len: usize) -> Self {
+    pub fn new(hud_size: coordinate::Size, slot_len: usize) -> Self {
         Self { hud_size, slot_len }
     }
 
@@ -66,7 +67,7 @@ impl QuickSlot {
                     MaterialFactory::build(*item).as_ref(),
                     &context,
                     gl,
-                    types::Size::new(Self::SLOT_WIDTH, Self::SLOT_HEIGHT),
+                    coordinate::Size::new(Self::SLOT_WIDTH, Self::SLOT_HEIGHT),
                 );
 
                 if let Some(holding_item) = holding_item {
@@ -83,16 +84,16 @@ impl QuickSlot {
         }
     }
 
-    pub fn resize(&mut self, hud_size: types::Size) {
+    pub fn resize(&mut self, hud_size: coordinate::Size) {
         self.hud_size = hud_size;
     }
 
-    pub fn clicked(&self, pos: &types::Point) -> Option<usize> {
+    pub fn clicked(&self, pos: &coordinate::Point) -> Option<usize> {
         let origin = &self.origin();
         let size = &self.size();
 
         // Quick Slot is not clicked
-        let padding = types::Size::new(Self::PADDING, Self::PADDING);
+        let padding = coordinate::Size::new(Self::PADDING, Self::PADDING);
         if !((origin + &padding) <= *pos && *pos < (origin + &(size - &padding))) {
             return None;
         }
@@ -104,17 +105,17 @@ impl QuickSlot {
         Some((local_pos.x / (Self::SLOT_WIDTH + Self::PADDING)) as usize)
     }
 
-    fn size(&self) -> types::Size {
-        types::Size::new(
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size::new(
             Self::PADDING + (Self::SLOT_WIDTH + Self::PADDING) * self.slot_len as f64,
             Self::SLOT_HEIGHT + Self::PADDING * 2.0,
         )
     }
 
-    fn origin(&self) -> types::Point {
+    fn origin(&self) -> coordinate::Point {
         let size = self.size();
 
-        types::Point::new(
+        coordinate::Point::new(
             (self.hud_size.width - size.width) / 2.0,
             self.hud_size.height - size.height - 10.0,
         )

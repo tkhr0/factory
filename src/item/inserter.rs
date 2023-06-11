@@ -13,6 +13,7 @@ pub use inserter_sign::*;
 mod inserter_symbol;
 pub use inserter_symbol::*;
 
+use crate::coordinate;
 use crate::item::{Machine, Material};
 use crate::types;
 use crate::Slot;
@@ -36,8 +37,8 @@ impl<const N: usize> Inserter<N> {
         50.0
     }
 
-    fn size(&self) -> types::Size {
-        types::Size::new(self.width(), self.height())
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size::new(self.width(), self.height())
     }
 
     fn direction(&self) -> &types::Direction {

@@ -3,6 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Inserter;
+use crate::coordinate;
 use crate::item::Fixture;
 use crate::item::Material;
 use crate::types;
@@ -69,7 +70,7 @@ impl<const N: usize> Fixture for Inserter<N> {
         }
     }
 
-    fn effect_range(&self) -> Option<types::GridSize> {
+    fn effect_range(&self) -> Option<coordinate::GridSize> {
         Some((3, 3).into())
     }
 

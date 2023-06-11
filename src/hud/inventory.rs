@@ -2,19 +2,20 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
+use crate::coordinate;
 use crate::item::{MaterialVariant, Sign};
 use crate::types;
 use crate::Inventory as InventoryState;
 
 pub struct Inventory {
-    hud_size: types::Size,
+    hud_size: coordinate::Size,
 }
 
 impl Inventory {
     const COLOR_UI_BORDER: types::Color = [0.5098, 0.5098, 0.5019, 1.0];
     const COLOR_UI_BODY: types::Color = [0.5098, 0.5098, 0.5019, 0.7];
 
-    pub fn new(hud_size: types::Size) -> Self {
+    pub fn new(hud_size: coordinate::Size) -> Self {
         Self { hud_size }
     }
 
@@ -43,30 +44,30 @@ impl Inventory {
         }
     }
 
-    fn size(&self) -> types::Size {
-        types::Size::new(
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size::new(
             (InventoryState::ROWS as f64) * WIDTH + 1.0,
             (InventoryState::COLUMNS as f64) * HEIGHT + 1.0,
         )
     }
 
-    fn origin(&self) -> types::Point {
+    fn origin(&self) -> coordinate::Point {
         let size = self.size();
 
-        types::Point::new(
+        coordinate::Point::new(
             (self.hud_size.width - size.width) / 2.0,
             (self.hud_size.height - size.height) / 2.0,
         )
     }
 
-    pub fn resize(&mut self, hud_size: types::Size) {
+    pub fn resize(&mut self, hud_size: coordinate::Size) {
         self.hud_size = hud_size;
     }
 }
 
 const WIDTH: f64 = 50.0;
 const HEIGHT: f64 = 50.0;
-const SIZE: types::Size = types::Size::new(WIDTH, HEIGHT);
+const SIZE: coordinate::Size = coordinate::Size::new(WIDTH, HEIGHT);
 
 #[derive(Default)]
 struct InventorySlot {}

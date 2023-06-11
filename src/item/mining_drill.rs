@@ -13,6 +13,7 @@ pub use mining_drill_sign::*;
 mod mining_drill_symbol;
 pub use mining_drill_symbol::*;
 
+use crate::coordinate;
 use crate::item::{Machine, Material};
 use crate::types;
 use crate::NaturalResource;
@@ -62,8 +63,8 @@ impl<const N: usize> MiningDrill<N> {
         50.0
     }
 
-    fn size(&self) -> types::Size {
-        types::Size::new(self.width(), self.height())
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size::new(self.width(), self.height())
     }
 
     fn angle(&self) -> types::Radian {

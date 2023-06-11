@@ -3,6 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::MiningDrill;
+use crate::coordinate;
 use crate::item::{Fixture, Material, MaterialFactory};
 use crate::types;
 use crate::Slot;
@@ -66,7 +67,7 @@ impl<const N: usize> Fixture for MiningDrill<N> {
         self.cooling_time = dt;
     }
 
-    fn effect_range(&self) -> Option<types::GridSize> {
+    fn effect_range(&self) -> Option<coordinate::GridSize> {
         Some((1, 1).into())
     }
 

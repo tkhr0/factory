@@ -7,7 +7,7 @@ pub use iron_ore::IronOre;
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
-use crate::types;
+use crate::coordinate;
 use crate::NaturalResourceVariant;
 
 pub trait NaturalResource {
@@ -35,7 +35,7 @@ pub trait NaturalResource {
         };
     }
 
-    fn render(&self, gl: &mut GlGraphics, context: &Context, size: &types::Size) {
+    fn render(&self, gl: &mut GlGraphics, context: &Context, size: &coordinate::Size) {
         graphics::Rectangle::new(self.color()).draw(
             [0.0, 0.0, size.width, size.height],
             &context.draw_state,

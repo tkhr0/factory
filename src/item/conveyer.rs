@@ -13,6 +13,7 @@ pub use conveyer_sign::*;
 mod conveyer_symbol;
 pub use conveyer_symbol::*;
 
+use crate::coordinate;
 use crate::item::{Machine, Material, MaterialFactory, MaterialVariant};
 use crate::types;
 use crate::Slot;
@@ -56,8 +57,8 @@ impl<const N: usize> Conveyer<N> {
         50.0
     }
 
-    fn size(&self) -> types::Size {
-        types::Size::new(self.width(), self.height())
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size::new(self.width(), self.height())
     }
 
     fn angle(&self) -> types::Radian {

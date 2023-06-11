@@ -13,6 +13,7 @@ pub use container_sign::*;
 mod container_symbol;
 pub use container_symbol::*;
 
+use crate::coordinate;
 use crate::item::{Machine, Material, MaterialFactory, MaterialVariant};
 use crate::types;
 use crate::Slot;
@@ -35,8 +36,8 @@ impl<const N: usize> Container<N> {
         50.0
     }
 
-    fn size(&self) -> types::Size {
-        types::Size::new(self.width(), self.height())
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size::new(self.width(), self.height())
     }
 
     fn direction(&self) -> &types::Direction {

@@ -1,7 +1,7 @@
 use std::cmp::{Ordering, PartialEq};
 use std::ops::{Add, Sub};
 
-use crate::types;
+use super::Size;
 
 #[derive(Debug)]
 pub struct Point {
@@ -15,10 +15,10 @@ impl Point {
     }
 }
 
-impl Add<&types::Size> for &Point {
+impl Add<&Size> for &Point {
     type Output = Point;
 
-    fn add(self, rhs: &types::Size) -> Self::Output {
+    fn add(self, rhs: &Size) -> Self::Output {
         Point::new(self.x + rhs.width, self.y + rhs.height)
     }
 }

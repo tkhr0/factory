@@ -1,3 +1,4 @@
+use crate::coordinate;
 use crate::item::{Fixture, Material};
 use crate::types;
 use crate::NaturalResource;
@@ -70,7 +71,7 @@ impl Tile {
         }
     }
 
-    pub fn effect_range(&self) -> Option<types::GridSize> {
+    pub fn effect_range(&self) -> Option<coordinate::GridSize> {
         if let Some(fixture) = self.fixture() {
             fixture.effect_range()
         } else {

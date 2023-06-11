@@ -4,8 +4,8 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 use piston::ResizeArgs;
 
+use crate::coordinate;
 use crate::item::Fixture;
-use crate::types;
 use crate::EventHandleState;
 use crate::PlayerState;
 use crate::TileState;
@@ -17,13 +17,13 @@ mod quick_slot;
 use quick_slot::QuickSlot;
 
 pub struct Hud {
-    size: types::Size,
+    size: coordinate::Size,
     inventory: Inventory,
     quick_slot: QuickSlot,
 }
 
 impl Hud {
-    pub fn new(size: types::Size, quick_slot_len: usize) -> Self {
+    pub fn new(size: coordinate::Size, quick_slot_len: usize) -> Self {
         let inventory = Inventory::new(size);
         let quick_slot = QuickSlot::new(size, quick_slot_len);
         Self {
@@ -38,7 +38,7 @@ impl Hud {
         context: &Context,
         gl: &mut GlGraphics,
         player_state: &PlayerState,
-        mouse_pos: &types::Point,
+        mouse_pos: &coordinate::Point,
         tile_state: TileState,
     ) {
         let holding_item = player_state.holding_item();
@@ -68,7 +68,7 @@ impl Hud {
     pub fn click(
         &mut self,
         args: &ButtonArgs,
-        mouse_pos: &types::Point,
+        mouse_pos: &coordinate::Point,
         mut event_handle_state: EventHandleState,
         player_state: &mut PlayerState,
     ) -> EventHandleState {
@@ -85,7 +85,7 @@ impl Hud {
     }
 
     pub fn resize(&mut self, args: &ResizeArgs) {
-        self.size = types::Size::new(args.window_size[0], args.window_size[1]);
+        self.size = coordinate::Size::new(args.window_size[0], args.window_size[1]);
         self.inventory.resize(self.size);
         self.quick_slot.resize(self.size);
     }

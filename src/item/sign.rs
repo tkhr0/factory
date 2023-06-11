@@ -2,13 +2,14 @@ use graphics::context::Context;
 use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
+use crate::coordinate;
 use crate::types;
 
 pub trait Sign {
     fn color(&self) -> types::Color;
-    fn size(&self) -> types::Size;
+    fn size(&self) -> coordinate::Size;
 
-    fn render(&self, context: &Context, gl: &mut GlGraphics, slot_size: types::Size) {
+    fn render(&self, context: &Context, gl: &mut GlGraphics, slot_size: coordinate::Size) {
         let size = self.size();
 
         graphics::Rectangle::new(self.color()).draw(

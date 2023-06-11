@@ -1,4 +1,5 @@
 use super::Inserter;
+use crate::coordinate;
 use crate::item::Sign;
 use crate::types;
 
@@ -7,8 +8,8 @@ impl<const N: usize> Sign for Inserter<N> {
         Self::COLOR_BODY
     }
 
-    fn size(&self) -> types::Size {
-        types::Size {
+    fn size(&self) -> coordinate::Size {
+        coordinate::Size {
             width: 50.0,
             height: 50.0,
         }

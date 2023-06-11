@@ -14,6 +14,7 @@ use piston::input::{ButtonEvent, MouseCursorEvent, RenderEvent, UpdateEvent};
 use piston::window::WindowSettings;
 use piston::ResizeEvent;
 
+mod coordinate;
 mod event_handle_state;
 mod field;
 mod game;
@@ -41,10 +42,9 @@ use quick_slot::QuickSlot;
 use slot::Slot;
 use tile::Tile;
 use tile_state::TileState;
-use types::Point;
 
 fn main() {
-    const WINDOW_SIZE: types::Size = types::Size::new(1300.0, 700.0);
+    const WINDOW_SIZE: coordinate::Size = coordinate::Size::new(1300.0, 700.0);
 
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
@@ -70,7 +70,7 @@ fn main() {
 
     game.initialize();
 
-    let mut mouse_pos = Point::new(0.0, 0.0);
+    let mut mouse_pos = coordinate::Point::new(0.0, 0.0);
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.resize_args() {
@@ -78,7 +78,7 @@ fn main() {
         }
 
         if let Some(mouse_args) = e.mouse_cursor_args() {
-            mouse_pos = Point::new(mouse_args[0], mouse_args[1]);
+            mouse_pos = coordinate::Point::new(mouse_args[0], mouse_args[1]);
         }
 
         if let Some(args) = e.button_args() {

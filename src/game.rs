@@ -2,7 +2,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState, RenderArgs, UpdateArgs};
 use piston::{Button, Key, ResizeArgs};
 
-use crate::types;
+use crate::coordinate;
 use crate::EventHandleState;
 use crate::Field;
 use crate::Hud;
@@ -15,7 +15,7 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(window_size: types::Size, gl: GlGraphics, quick_slot_len: usize) -> Self {
+    pub fn new(window_size: coordinate::Size, gl: GlGraphics, quick_slot_len: usize) -> Self {
         Self {
             gl,
             field: Field::new(),
@@ -31,7 +31,7 @@ impl Game {
         &mut self,
         args: &RenderArgs,
         player_state: &PlayerState,
-        mouse_pos: &types::Point,
+        mouse_pos: &coordinate::Point,
     ) {
         const BACKGROUND: [f32; 4] = [252.0, 249.0, 230.0, 1.0];
 
@@ -51,7 +51,7 @@ impl Game {
     pub fn button(
         &mut self,
         args: &ButtonArgs,
-        mouse_pos: &types::Point,
+        mouse_pos: &coordinate::Point,
         player_state: &mut PlayerState,
     ) {
         if args.state == ButtonState::Press {

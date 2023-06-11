@@ -3,6 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::Container;
+use crate::coordinate;
 use crate::item::{Fixture, Material};
 use crate::types;
 use crate::Slot;
@@ -75,7 +76,7 @@ impl<const N: usize> Fixture for Container<N> {
         0.0
     }
 
-    fn effect_range(&self) -> Option<types::GridSize> {
+    fn effect_range(&self) -> Option<coordinate::GridSize> {
         None
     }
     fn affect(&mut self, _target: &mut Tile, _direction: &types::Direction) {}

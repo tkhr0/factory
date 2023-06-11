@@ -3,6 +3,7 @@ use std::fmt::{Debug, Error, Formatter};
 use graphics::context::Context;
 use opengl_graphics::GlGraphics;
 
+use crate::coordinate;
 use crate::item::Material;
 use crate::types;
 use crate::Slot;
@@ -43,7 +44,7 @@ pub trait Fixture {
     fn set_cooling_time(&mut self, dt: f64);
     fn cooling_time(&self) -> f64;
 
-    fn effect_range(&self) -> Option<types::GridSize>;
+    fn effect_range(&self) -> Option<coordinate::GridSize>;
     fn iterate(&mut self);
 
     fn affect(&mut self, target: &mut Tile, direction: &types::Direction);
