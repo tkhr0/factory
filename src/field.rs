@@ -5,16 +5,12 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
-use crate::coordinate::{GridPoint, Point, Size};
+use crate::coordinate::{GridPoint, Point, Size, TILE_COLUMNS, TILE_ROWS, TILE_LENGTH, TILE_SIZE};
 use crate::item::{Machine, MachineFactory, MaterialVariant};
 use crate::natural_resource::{Coal, IronOre, NaturalResource};
 use crate::types::Direction;
 use crate::Tile;
 use crate::TileState;
-
-const WIDTH: usize = 16;
-const HEIGHT: usize = 16;
-const SIZE: usize = WIDTH * HEIGHT;
 
 #[derive(Debug)]
 pub struct Field {
@@ -22,8 +18,6 @@ pub struct Field {
 }
 
 impl Field {
-    const TILE_SIZE: f64 = 50.0;
-
     pub fn new() -> Field {
         Self::default()
     }
@@ -65,7 +59,7 @@ impl Field {
     }
 
     pub fn add_fixture(&mut self, fixture: Box<dyn Machine>, grid_point: GridPoint) {
-        self.tiles[grid_point.as_index(WIDTH)].set_fixture(fixture);
+        self.tiles[grid_point.as_index(TILE_COLUMNS)].set_fixture(fixture);
     }
 
     pub fn add_natural_resource(
@@ -73,19 +67,19 @@ impl Field {
         natural_resource: Box<dyn NaturalResource>,
         grid_point: GridPoint,
     ) {
-        self.tiles[grid_point.as_index(WIDTH)].set_natural_resource(natural_resource);
+        self.tiles[grid_point.as_index(TILE_COLUMNS)].set_natural_resource(natural_resource);
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {
-        let tile_size = Size::new(Self::TILE_SIZE, Self::TILE_SIZE);
+        let tile_size = Size::new(TILE_SIZE, TILE_SIZE);
 
         for tile in self.tiles.iter() {
             graphics::Rectangle::new_border([0.0, 0.0, 0.0, 0.1], 1.0).draw(
                 [
-                    Self::TILE_SIZE * tile.x as f64,
-                    Self::TILE_SIZE * tile.y as f64,
-                    Self::TILE_SIZE,
-                    Self::TILE_SIZE,
+                    TILE_SIZE * tile.x as f64,
+                    TILE_SIZE * tile.y as f64,
+                    TILE_SIZE,
+                    TILE_SIZE,
                 ],
                 &context.draw_state,
                 context.transform,
@@ -95,8 +89,8 @@ impl Field {
             if let Some(natural_resource) = tile.natural_resource() {
                 let mut context: Context = *context;
                 context.transform = context.transform.trans(
-                    tile.x as f64 * Self::TILE_SIZE,
-                    tile.y as f64 * Self::TILE_SIZE,
+                    tile.x as f64 * TILE_SIZE,
+                    tile.y as f64 * TILE_SIZE,
                 );
                 natural_resource.render(gl, &context, &tile_size);
             }
@@ -104,8 +98,8 @@ impl Field {
             if let Some(fixture) = tile.fixture() {
                 let mut context: Context = *context;
                 context.transform = context.transform.trans(
-                    tile.x as f64 * Self::TILE_SIZE,
-                    tile.y as f64 * Self::TILE_SIZE,
+                    tile.x as f64 * TILE_SIZE,
+                    tile.y as f64 * TILE_SIZE,
                 );
                 fixture.render(gl, &context);
                 context.reset();
@@ -114,10 +108,10 @@ impl Field {
     }
 
     pub fn tile_state(&self, point: &Point) -> TileState {
-        let x = (point.x / Self::TILE_SIZE) as usize;
-        let y = (point.y / Self::TILE_SIZE) as usize;
+        let x = (point.x / TILE_SIZE) as usize;
+        let y = (point.y / TILE_SIZE) as usize;
 
-        if let Some(tile) = self.tiles.get(y * WIDTH + x) {
+        if let Some(tile) = self.tiles.get(y * TILE_COLUMNS + x) {
             tile.to_tile_state()
         } else {
             TileState::default()
@@ -125,10 +119,10 @@ impl Field {
     }
 
     fn relative_direction(&self, base_index: usize, other_index: usize) -> Direction {
-        let base_x = base_index % WIDTH;
-        let base_y = base_index / WIDTH;
-        let other_x = other_index % WIDTH;
-        let other_y = other_index / WIDTH;
+        let base_x = base_index % TILE_COLUMNS;
+        let base_y = base_index / TILE_COLUMNS;
+        let other_x = other_index % TILE_COLUMNS;
+        let other_y = other_index / TILE_COLUMNS;
 
         if base_x == other_x {
             if base_y == other_y {
@@ -177,20 +171,20 @@ impl Field {
         holding_item: Option<Box<dyn Machine>>,
     ) {
         if args.state == ButtonState::Press {
-            let x = (mouse_pos.x / Self::TILE_SIZE) as usize;
-            let y = (mouse_pos.y / Self::TILE_SIZE) as usize;
+            let x = (mouse_pos.x / TILE_SIZE) as usize;
+            let y = (mouse_pos.y / TILE_SIZE) as usize;
             let point: GridPoint = GridPoint::new(x, y);
 
             match args.button {
                 piston::Button::Mouse(piston::MouseButton::Left) => {
-                    if let Some(fixture) = &mut self.tiles[point.as_index(WIDTH)].fixture_mut() {
+                    if let Some(fixture) = &mut self.tiles[point.as_index(TILE_COLUMNS)].fixture_mut() {
                         fixture.on_click();
                     } else if let Some(item) = holding_item {
                         self.add_fixture(item, point);
                     }
                 }
                 piston::Button::Keyboard(piston::Key::R) => {
-                    if let Some(fixture) = &mut self.tiles[point.as_index(WIDTH)].fixture_mut() {
+                    if let Some(fixture) = &mut self.tiles[point.as_index(TILE_COLUMNS)].fixture_mut() {
                         fixture.rotate();
                     }
                 }
@@ -207,12 +201,12 @@ impl Field {
 
 impl Default for Field {
     fn default() -> Self {
-        let mut tiles = Vec::with_capacity(SIZE);
+        let mut tiles = Vec::with_capacity(TILE_LENGTH);
 
-        for i in 0..SIZE {
+        for i in 0..TILE_LENGTH {
             let mut tile: Tile = Default::default();
-            tile.x = i % WIDTH;
-            tile.y = i / WIDTH;
+            tile.x = i % TILE_COLUMNS;
+            tile.y = i / TILE_COLUMNS;
             tiles.push(tile);
         }
 
@@ -365,7 +359,7 @@ impl Iterator for TileIterator {
             TileIteratorState::None => None,
             TileIteratorState::Range(range) => {
                 for point in range {
-                    let index = point.as_index(WIDTH);
+                    let index = point.as_index(TILE_COLUMNS);
                     return Some(index);
                 }
                 None
@@ -378,7 +372,7 @@ impl Iterator for TileIterator {
 mod test_tile_iterator {
     use crate::{
         coordinate::GridPoint,
-        field::{SIZE, WIDTH},
+        field::{TILE_LENGTH, TILE_COLUMNS},
         item::{MachineFactory, MaterialVariant},
         tile::Tile,
     };
@@ -388,27 +382,27 @@ mod test_tile_iterator {
         use self::super::TileIterator;
 
         let mut tiles = Vec::new();
-        for i in 0..(SIZE) {
+        for i in 0..(TILE_LENGTH) {
             let mut tile: Tile = Default::default();
-            let point = GridPoint::from_index(i, WIDTH);
+            let point = GridPoint::from_index(i, TILE_COLUMNS);
             tile.x = point.x;
             tile.y = point.y;
             tiles.push(tile);
         }
-        let index = GridPoint::new(2, 2).as_index(WIDTH);
+        let index = GridPoint::new(2, 2).as_index(TILE_COLUMNS);
         tiles[index].set_fixture(MachineFactory::build(MaterialVariant::Conveyer).unwrap());
 
         let mut iter = TileIterator::new(index, &tiles);
 
-        assert_eq!(iter.next(), Some(GridPoint::new(1, 1).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(2, 1).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(3, 1).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(1, 2).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(2, 2).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(3, 2).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(1, 3).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(2, 3).as_index(WIDTH)));
-        assert_eq!(iter.next(), Some(GridPoint::new(3, 3).as_index(WIDTH)));
+        assert_eq!(iter.next(), Some(GridPoint::new(1, 1).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(2, 1).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(3, 1).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(1, 2).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(2, 2).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(3, 2).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(1, 3).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(2, 3).as_index(TILE_COLUMNS)));
+        assert_eq!(iter.next(), Some(GridPoint::new(3, 3).as_index(TILE_COLUMNS)));
         assert_eq!(iter.next(), None);
     }
 }

@@ -125,8 +125,8 @@ impl QuickSlot {
 #[cfg(test)]
 mod quick_slot_test {
     mod clicked {
+        use crate::coordinate::{Point, Size};
         use crate::hud::quick_slot::QuickSlot;
-        use crate::types::{Point, Size};
 
         #[test]
         fn test_range_out_of_y_axis() {
