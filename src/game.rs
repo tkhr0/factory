@@ -39,7 +39,8 @@ impl Game {
             // Clear the screen.
             graphics::clear(BACKGROUND, gl);
             self.field.render(gl, &c);
-            self.hud.render(&c, gl, player_state, mouse_pos);
+            let tile_state = self.field.tile_state(mouse_pos);
+            self.hud.render(&c, gl, player_state, mouse_pos, tile_state);
         });
     }
 

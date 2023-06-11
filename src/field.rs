@@ -9,6 +9,7 @@ use crate::item::{Machine, MachineFactory, MaterialVariant};
 use crate::natural_resource::{Coal, IronOre, NaturalResource};
 use crate::types::{Direction, GridPoint, Point, Size};
 use crate::Tile;
+use crate::TileState;
 
 const WIDTH: usize = 16;
 const HEIGHT: usize = 16;
@@ -108,6 +109,17 @@ impl Field {
                 fixture.render(gl, &context);
                 context.reset();
             }
+        }
+    }
+
+    pub fn tile_state(&self, point: &Point) -> TileState {
+        let x = (point.x / Self::TILE_SIZE) as usize;
+        let y = (point.y / Self::TILE_SIZE) as usize;
+
+        if let Some(tile) = self.tiles.get(y * WIDTH + x) {
+            tile.to_tile_state()
+        } else {
+            TileState::default()
         }
     }
 

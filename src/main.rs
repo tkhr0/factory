@@ -26,6 +26,7 @@ mod player_state;
 mod quick_slot;
 mod slot;
 mod tile;
+mod tile_state;
 mod types;
 
 use event_handle_state::EventHandleState;
@@ -39,6 +40,7 @@ use player_state::PlayerState;
 use quick_slot::QuickSlot;
 use slot::Slot;
 use tile::Tile;
+use tile_state::TileState;
 use types::Point;
 
 fn main() {

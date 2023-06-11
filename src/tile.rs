@@ -1,6 +1,7 @@
 use crate::item::{Fixture, Material};
 use crate::types;
 use crate::NaturalResource;
+use crate::TileState;
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -132,5 +133,9 @@ impl Tile {
         } else {
             None
         }
+    }
+
+    pub fn to_tile_state(&self) -> TileState {
+        TileState::new().set_natural_resource(self.natural_resource())
     }
 }

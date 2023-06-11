@@ -8,6 +8,7 @@ use crate::item::Fixture;
 use crate::types;
 use crate::EventHandleState;
 use crate::PlayerState;
+use crate::TileState;
 
 mod inventory;
 use inventory::Inventory;
@@ -38,11 +39,14 @@ impl Hud {
         gl: &mut GlGraphics,
         player_state: &PlayerState,
         mouse_pos: &types::Point,
+        tile_state: TileState,
     ) {
         let holding_item = player_state.holding_item();
 
         self.quick_slot
             .render(context, gl, player_state.quick_slot(), holding_item);
+
+        println!("{:?}", tile_state);
 
         if player_state.shown_inventory() {
             self.inventory.render(player_state.inventory(), gl, context);
