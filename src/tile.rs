@@ -1,7 +1,6 @@
 use crate::item::{Fixture, Material};
 use crate::types;
 use crate::NaturalResource;
-use crate::NaturalResourceVariant;
 
 #[derive(Debug, Default)]
 pub struct Tile {
@@ -60,6 +59,10 @@ impl Tile {
         self.fixture.as_mut()
     }
 
+    pub fn take_fixture(&mut self) -> Option<Box<dyn Fixture>> {
+        self.fixture.take()
+    }
+
     pub fn update(&mut self, dt: f64) {
         if let Some(fixture) = self.fixture_mut() {
             fixture.update(dt);
@@ -81,6 +84,13 @@ impl Tile {
 
         if let Some(fixture) = self.fixture_mut() {
             fixture.affect(other, &direction);
+        }
+    }
+
+    pub fn affect_self(&mut self) {
+        if let Some(mut fixture) = self.take_fixture() {
+            fixture.affect(self, &types::Direction::Origin);
+            self.set_fixture(fixture)
         }
     }
 

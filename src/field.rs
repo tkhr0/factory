@@ -151,7 +151,9 @@ impl Field {
         for i in 0..self.tiles.len() {
             for other_index in self.effect_range(i) {
                 let direction = self.relative_direction(i, other_index);
-                if let Ok([tile, other]) = self.tiles.get_many_mut([i, other_index]) {
+                if i == other_index {
+                    self.tiles[i].affect_self();
+                } else if let Ok([tile, other]) = self.tiles.get_many_mut([i, other_index]) {
                     tile.affect(other, direction);
                 }
             }
