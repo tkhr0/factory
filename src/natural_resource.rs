@@ -1,3 +1,6 @@
+pub mod coal;
+pub use coal::Coal;
+
 pub mod iron_ore;
 pub use iron_ore::IronOre;
 

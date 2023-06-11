@@ -6,7 +6,7 @@ use opengl_graphics::GlGraphics;
 use piston::input::{ButtonArgs, ButtonState};
 
 use crate::item::{Machine, MachineFactory, MaterialVariant};
-use crate::natural_resource::IronOre;
+use crate::natural_resource::{Coal, IronOre, NaturalResource};
 use crate::types::{Direction, GridPoint, Point, Size};
 use crate::Tile;
 
@@ -27,8 +27,7 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.tiles[GridPoint::new(2, 2).as_index(WIDTH)]
-            .set_natural_resource(Box::new(IronOre::new()));
+        self.add_natural_resource(Box::new(IronOre::new()), GridPoint::new(2, 2));
 
         self.add_fixture(
             MachineFactory::build(MaterialVariant::MiningDrill).unwrap(),
@@ -43,12 +42,13 @@ impl Field {
             GridPoint::new(4, 2),
         );
 
+        self.add_natural_resource(Box::new(Coal::new()), GridPoint::new(2, 3));
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
+            MachineFactory::build(MaterialVariant::MiningDrill).unwrap(),
             GridPoint::new(2, 3),
         );
         self.add_fixture(
-            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
+            MachineFactory::build(MaterialVariant::Inserter).unwrap(),
             GridPoint::new(3, 3),
         );
         self.add_fixture(
@@ -84,6 +84,14 @@ impl Field {
 
     pub fn add_fixture(&mut self, fixture: Box<dyn Machine>, grid_point: GridPoint) {
         self.tiles[grid_point.as_index(WIDTH)].set_fixture(fixture);
+    }
+
+    pub fn add_natural_resource(
+        &mut self,
+        natural_resource: Box<dyn NaturalResource>,
+        grid_point: GridPoint,
+    ) {
+        self.tiles[grid_point.as_index(WIDTH)].set_natural_resource(natural_resource);
     }
 
     pub fn render(&self, gl: &mut GlGraphics, context: &Context) {

@@ -29,10 +29,12 @@ pub struct MiningDrill<const N: usize> {
 }
 
 impl<const N: usize> MiningDrill<N> {
-    const COLOR_BODY: types::Color = [0.0, 0.0, 0.0, 1.0];
+    const COLOR_BODY: types::Color = [0.7, 0.7, 0.7, 1.0];
     const MINING_AMOUNT: usize = 1;
-    const MINABLE_NATURAL_RESOURCES: [NaturalResourceVariant; 1] =
-        [NaturalResourceVariant::IronOre];
+    const MINABLE_NATURAL_RESOURCES: [NaturalResourceVariant; 2] = [
+        NaturalResourceVariant::Coal,
+        NaturalResourceVariant::IronOre,
+    ];
 
     fn minable(&self, target: &dyn NaturalResource) -> bool {
         if !self.slots.iter().any(|slot| slot.is_empty()) {
