@@ -14,9 +14,9 @@ use piston::input::{ButtonEvent, MouseCursorEvent, RenderEvent, UpdateEvent};
 use piston::window::WindowSettings;
 use piston::ResizeEvent;
 
-mod app;
 mod event_handle_state;
 mod field;
+mod game;
 mod hud;
 mod inventory;
 mod item;
@@ -28,9 +28,9 @@ mod slot;
 mod tile;
 mod types;
 
-use app::App;
 use event_handle_state::EventHandleState;
 use field::Field;
+use game::Game;
 use hud::Hud;
 use inventory::Inventory;
 use natural_resource::NaturalResource;
@@ -60,19 +60,19 @@ fn main() {
     quick_slot.set_item(1, item::MaterialVariant::Conveyer);
     quick_slot.set_item(2, item::MaterialVariant::Container);
 
-    let mut app = App::new(
+    let mut game = Game::new(
         WINDOW_SIZE,
         GlGraphics::new(opengl),
         player_state.quick_slot().len(),
     );
 
-    app.initialize();
+    game.initialize();
 
     let mut mouse_pos = Point::new(0.0, 0.0);
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.resize_args() {
-            app.resize(&args);
+            game.resize(&args);
         }
 
         if let Some(mouse_args) = e.mouse_cursor_args() {
@@ -80,15 +80,15 @@ fn main() {
         }
 
         if let Some(args) = e.button_args() {
-            app.button(&args, &mouse_pos, &mut player_state);
+            game.button(&args, &mouse_pos, &mut player_state);
         }
 
         if let Some(args) = e.update_args() {
-            app.update(&args);
+            game.update(&args);
         }
 
         if let Some(args) = e.render_args() {
-            app.render(&args, &player_state, &mouse_pos);
+            game.render(&args, &player_state, &mouse_pos);
         }
     }
 }

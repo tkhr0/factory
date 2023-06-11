@@ -8,15 +8,15 @@ use crate::Field;
 use crate::Hud;
 use crate::PlayerState;
 
-pub struct App {
+pub struct Game {
     gl: GlGraphics, // OpenGL drawing backend.
     field: Field,
     hud: Hud,
 }
 
-impl App {
-    pub fn new(window_size: types::Size, gl: GlGraphics, quick_slot_len: usize) -> App {
-        App {
+impl Game {
+    pub fn new(window_size: types::Size, gl: GlGraphics, quick_slot_len: usize) -> Self {
+        Self {
             gl,
             field: Field::new(),
             hud: Hud::new(window_size, quick_slot_len),
