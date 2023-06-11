@@ -27,11 +27,20 @@ impl Field {
     }
 
     pub fn initialize(&mut self) {
-        self.tiles[0].set_natural_resource(Box::new(IronOre::new()));
+        self.tiles[GridPoint::new(2, 2).as_index(WIDTH)]
+            .set_natural_resource(Box::new(IronOre::new()));
 
         self.add_fixture(
             MachineFactory::build(MaterialVariant::MiningDrill).unwrap(),
-            GridPoint::new(0, 0),
+            GridPoint::new(2, 2),
+        );
+        self.add_fixture(
+            MachineFactory::build(MaterialVariant::Inserter).unwrap(),
+            GridPoint::new(3, 2),
+        );
+        self.add_fixture(
+            MachineFactory::build(MaterialVariant::Conveyer).unwrap(),
+            GridPoint::new(4, 2),
         );
 
         self.add_fixture(
