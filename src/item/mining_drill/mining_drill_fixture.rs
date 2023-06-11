@@ -3,8 +3,7 @@ use graphics::Transformed;
 use opengl_graphics::GlGraphics;
 
 use super::MiningDrill;
-use crate::item::Fixture;
-use crate::item::Material;
+use crate::item::{Fixture, Material, MaterialFactory};
 use crate::types;
 use crate::Slot;
 use crate::Tile;
@@ -79,10 +78,21 @@ impl<const N: usize> Fixture for MiningDrill<N> {
         if !self.operatable() {
             return;
         }
+
         if *direction == types::Direction::Origin {
             if let Some(natural_resource) = target.natural_resource() {
                 if self.minable(natural_resource) {
-                    let _ = target.mine(N);
+                    let material =
+                        MaterialFactory::build(natural_resource.variant().clone().into());
+                    if target.mine(Self::MINING_AMOUNT).is_ok() {
+                        // TODO: mine always one resource
+                        for slot in self.slots.iter_mut() {
+                            if slot.is_empty() {
+                                let _ = slot.push(Some(material));
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -105,6 +115,13 @@ impl<const N: usize> Fixture for MiningDrill<N> {
     }
 
     fn request(&mut self) -> Option<Box<dyn Material>> {
+        for slot in self.slots.iter_mut() {
+            let resource = slot.pick();
+            if resource.is_some() {
+                return resource;
+            }
+        }
+
         None
     }
 

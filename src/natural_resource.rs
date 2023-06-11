@@ -12,6 +12,7 @@ pub trait NaturalResource {
 
     fn variant(&self) -> NaturalResourceVariant;
 
+    // 埋蔵量
     fn reserves(&self) -> usize;
     fn set_reserves(&mut self, amount: usize);
 

@@ -30,6 +30,7 @@ pub struct MiningDrill<const N: usize> {
 
 impl<const N: usize> MiningDrill<N> {
     const COLOR_BODY: types::Color = [0.0, 0.0, 0.0, 1.0];
+    const MINING_AMOUNT: usize = 1;
     const MINABLE_NATURAL_RESOURCES: [NaturalResourceVariant; 1] =
         [NaturalResourceVariant::IronOre];
 
