@@ -1,5 +1,6 @@
 use crate::item::{
-    CoalBuilder, ContainerBuilder, ConveyerBuilder, InserterBuilder, MiningDrillBuilder,
+    CoalBuilder, ContainerBuilder, ConveyerBuilder, InserterBuilder, IronOreBuilder,
+    MiningDrillBuilder,
 };
 use crate::item::{Material, MaterialBuilder, MaterialVariant};
 
@@ -13,6 +14,7 @@ impl MaterialFactory {
             MaterialVariant::Inserter => InserterBuilder::new("Inserter").build(),
             MaterialVariant::MiningDrill => MiningDrillBuilder::new("MiningDrill").build(),
             MaterialVariant::Coal => CoalBuilder::new().build(),
+            MaterialVariant::IronOre => IronOreBuilder::new().build(),
         }
     }
 }

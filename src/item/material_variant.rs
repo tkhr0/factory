@@ -9,6 +9,7 @@ pub enum MaterialVariant {
 
     // resources
     Coal,
+    IronOre,
 }
 
 impl MaterialVariant {

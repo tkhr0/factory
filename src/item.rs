@@ -33,6 +33,9 @@ pub use mining_drill::*;
 mod coal;
 pub use coal::*;
 
+mod iron_ore;
+pub use iron_ore::*;
+
 mod machine_factory;
 pub use machine_factory::MachineFactory;
 
